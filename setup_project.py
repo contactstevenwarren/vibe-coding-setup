@@ -219,12 +219,57 @@ def create_subdirectories(project_path):
         print(f"Error creating subdirectories: {e}")
         sys.exit(1)
 
+def create_memory_bank_files(memory_bank_path, project_name, project_description):
+    """
+    Create and populate the required files in the memory-bank directory.
+    
+    Args:
+        memory_bank_path: Path object for the memory-bank directory
+        project_name: Name of the project
+        project_description: Description of the project
+    """
+    # Define the files to create and their content templates
+    files_to_create = {
+        "product-requirements-document.md": PRODUCT_REQUIREMENTS_TEMPLATE,
+        "tech-stack.md": TECH_STACK_TEMPLATE,
+        "implementation-plan.md": IMPLEMENTATION_PLAN_TEMPLATE,
+        "progress.md": PROGRESS_TEMPLATE,
+        "architecture.md": ARCHITECTURE_TEMPLATE
+    }
+    
+    created_files = []
+    
+    # Create each file with the appropriate content
+    for filename, template in files_to_create.items():
+        file_path = memory_bank_path / filename
+        
+        try:
+            # Format the template with project details
+            content = template.format(
+                project_name=project_name,
+                project_description=project_description
+            )
+            
+            # Write the content to the file
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+                
+            print(f"Created file: {file_path}")
+            created_files.append(file_path)
+        except Exception as e:
+            print(f"Error creating {filename}: {e}")
+            
+    return created_files
+
 if __name__ == "__main__":
     print("Vibe Coding Project Setup Script")
     project_name = get_project_name()
     project_description = get_project_description()
     project_path = create_project_directory(project_name)
     memory_bank_path, cursor_path = create_subdirectories(project_path)
+    
+    # Create memory-bank files
+    memory_bank_files = create_memory_bank_files(memory_bank_path, project_name, project_description)
     
     print(f"Project name: {project_name}")
     print(f"Project description: {project_description}")

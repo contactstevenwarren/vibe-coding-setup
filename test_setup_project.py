@@ -12,7 +12,8 @@ from setup_project import (
     get_project_description, 
     create_project_directory,
     create_subdirectories,
-    sanitize_project_name
+    sanitize_project_name,
+    create_memory_bank_files
 )
 
 class TestSetupProject(unittest.TestCase):
@@ -116,6 +117,47 @@ class TestSetupProject(unittest.TestCase):
             # Check directories exist
             self.assertTrue(memory_bank_path.exists())
             self.assertTrue(cursor_path.exists())
+    
+    def test_create_memory_bank_files(self):
+        """Test that create_memory_bank_files creates the expected files with correct content."""
+        # Create a project directory and memory-bank subdirectory for testing
+        test_project_dir = self.test_dir / "test-project"
+        test_project_dir.mkdir()
+        memory_bank_path = test_project_dir / "memory-bank"
+        memory_bank_path.mkdir()
+        
+        # Test data
+        test_project_name = "test-project"
+        test_project_description = "This is a test project"
+        
+        # Capture stdout to prevent output during tests
+        with unittest.mock.patch('sys.stdout', new=io.StringIO()):
+            created_files = create_memory_bank_files(memory_bank_path, test_project_name, test_project_description)
+            
+            # Check that the expected number of files were created
+            self.assertEqual(len(created_files), 5)
+            
+            # Check that all expected files exist
+            expected_files = [
+                "product-requirements-document.md",
+                "tech-stack.md",
+                "implementation-plan.md",
+                "progress.md",
+                "architecture.md"
+            ]
+            
+            for filename in expected_files:
+                file_path = memory_bank_path / filename
+                self.assertTrue(file_path.exists(), f"{filename} was not created")
+                
+                # Check that the file contains the project name
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    self.assertIn(test_project_name, content)
+                    
+                    # For PRD, also check for project description
+                    if filename == "product-requirements-document.md":
+                        self.assertIn(test_project_description, content)
 
 if __name__ == "__main__":
     unittest.main() 

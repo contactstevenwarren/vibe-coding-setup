@@ -20,6 +20,8 @@
 
 * `create_subdirectories(project_path)`: Creates the required subdirectories (memory-bank and .cursor) within the project directory. Returns the Path objects for the created subdirectories.
 
+* `create_memory_bank_files(memory_bank_path, project_name, project_description)`: Creates and populates the required files in the memory-bank directory (product-requirements-document.md, tech-stack.md, implementation-plan.md, progress.md, and architecture.md) using the template constants and project information.
+
 ## Template Constants
 
 * `PRODUCT_REQUIREMENTS_TEMPLATE`: Boilerplate content for the product-requirements-document.md file with placeholders for project_name and project_description.
