@@ -157,21 +157,6 @@ type: Default
 Emphasize modularity (multiple files) and avoid creating monolithic files.
 """
 
-CURSOR_RULES_README = """---
-description: Guide for adding more rules
-type: Manual
----
-
-# Add more rules below, especially for your specific tech stack
-Examples:
-- State management patterns
-- API design principles
-- Testing requirements
-- Styling conventions
-
-Use the `/Generate Cursor Rules` command in Cursor to generate more rules based on your memory bank files.
-"""
-
 # Post-execution instructions with CLI-friendly formatting
 POST_EXECUTION_INSTRUCTIONS = """✅ Project '{project_name}' structure created successfully!
 
@@ -404,8 +389,7 @@ def create_cursor_rules_files(cursor_path):
         "update_architecture.mdc": CURSOR_RULES_UPDATE_ARCHITECTURE,
         "update_progress.mdc": CURSOR_RULES_UPDATE_PROGRESS,
         "validation_workflow.mdc": CURSOR_RULES_VALIDATION_WORKFLOW,
-        "modularity.mdc": CURSOR_RULES_MODULARITY,
-        "readme.mdc": CURSOR_RULES_README
+        "modularity.mdc": CURSOR_RULES_MODULARITY
     }
     
     created_files = []
