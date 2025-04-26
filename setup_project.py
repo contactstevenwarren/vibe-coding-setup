@@ -157,6 +157,31 @@ type: Default
 Emphasize modularity (multiple files) and avoid creating monolithic files.
 """
 
+CURSOR_RULES_README = """---
+description: Keep README.md updated after major steps
+type: Default
+---
+
+After completing each major implementation step, update the project's README.md with:
+
+1. What the project does (with latest features added)
+2. Why these features are useful
+3. How users can get started with these features
+4. Any updated usage examples
+5. Current project status
+
+The README should be the single source of truth for new users discovering your project. Keep it concise, accurate, and up-to-date. Consider adding:
+
+- A clear description of what the project does
+- Installation and setup instructions
+- Basic usage examples
+- Technology stack overview
+- Current status/roadmap
+- Contributors section
+
+Place README.md in the repository root for maximum visibility.
+"""
+
 # Post-execution instructions with CLI-friendly formatting
 POST_EXECUTION_INSTRUCTIONS = """✅ Project '{project_name}' structure created successfully!
 
@@ -389,7 +414,8 @@ def create_cursor_rules_files(cursor_path):
         "update_architecture.mdc": CURSOR_RULES_UPDATE_ARCHITECTURE,
         "update_progress.mdc": CURSOR_RULES_UPDATE_PROGRESS,
         "validation_workflow.mdc": CURSOR_RULES_VALIDATION_WORKFLOW,
-        "modularity.mdc": CURSOR_RULES_MODULARITY
+        "modularity.mdc": CURSOR_RULES_MODULARITY,
+        "readme.mdc": CURSOR_RULES_README
     }
     
     created_files = []

@@ -198,7 +198,7 @@ class TestSetupProject(unittest.TestCase):
             self.assertTrue(rules_dir.exists(), "rules directory was not created")
             
             # Check that we have the expected number of rule files
-            self.assertEqual(len(created_files), 6, "Not all rule files were created")
+            self.assertEqual(len(created_files), 7, "Not all rule files were created")
             
             # Check that specific rule files exist and contain the right content
             architecture_rule = rules_dir / "architecture.mdc"
