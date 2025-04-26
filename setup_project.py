@@ -262,6 +262,26 @@ def create_memory_bank_files(memory_bank_path, original_project_name, project_de
             
     return created_files
 
+def create_cursor_rules_file(cursor_path):
+    """
+    Create and populate the .cursor/rules file.
+    
+    Args:
+        cursor_path: Path object for the .cursor directory
+    """
+    rules_file_path = cursor_path / "rules"
+    
+    try:
+        # Write the content to the file
+        with open(rules_file_path, 'w', encoding='utf-8') as f:
+            f.write(CURSOR_RULES_TEMPLATE)
+            
+        print(f"Created file: {rules_file_path}")
+        return rules_file_path
+    except Exception as e:
+        print(f"Error creating .cursor/rules file: {e}")
+        return None
+
 if __name__ == "__main__":
     print("Vibe Coding Project Setup Script")
     original_project_name, sanitized_project_name = get_project_name()
@@ -271,6 +291,9 @@ if __name__ == "__main__":
     
     # Create memory-bank files with the original project name for content
     memory_bank_files = create_memory_bank_files(memory_bank_path, original_project_name, project_description)
+    
+    # Create .cursor/rules file
+    cursor_rules_file = create_cursor_rules_file(cursor_path)
     
     print(f"Project name: {original_project_name}")
     print(f"Sanitized directory name: {sanitized_project_name}")

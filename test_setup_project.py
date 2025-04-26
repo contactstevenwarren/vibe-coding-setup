@@ -13,7 +13,9 @@ from setup_project import (
     create_project_directory,
     create_subdirectories,
     sanitize_project_name,
-    create_memory_bank_files
+    create_memory_bank_files,
+    create_cursor_rules_file,
+    CURSOR_RULES_TEMPLATE
 )
 
 class TestSetupProject(unittest.TestCase):
@@ -165,6 +167,31 @@ class TestSetupProject(unittest.TestCase):
                     # For PRD, also check for project description
                     if filename == "product-requirements-document.md":
                         self.assertIn(test_project_description, content)
+
+    def test_create_cursor_rules_file(self):
+        """Test that create_cursor_rules_file creates the rules file with correct content."""
+        # Create a project directory and .cursor subdirectory for testing
+        test_project_dir = self.test_dir / "test-project"
+        test_project_dir.mkdir()
+        cursor_path = test_project_dir / ".cursor"
+        cursor_path.mkdir()
+        
+        # Capture stdout to prevent output during tests
+        with unittest.mock.patch('sys.stdout', new=io.StringIO()):
+            rules_file_path = create_cursor_rules_file(cursor_path)
+            
+            # Check that the file exists
+            self.assertTrue(rules_file_path.exists(), "rules file was not created")
+            
+            # Check that the file contains the correct content
+            with open(rules_file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                self.assertEqual(content, CURSOR_RULES_TEMPLATE)
+                
+                # Check for key elements in the rules file
+                self.assertIn("Cursor Rules - Boilerplate", content)
+                self.assertIn("rules:", content)
+                self.assertIn('response: "Always read memory-bank/architecture.md', content)
 
 if __name__ == "__main__":
     unittest.main() 

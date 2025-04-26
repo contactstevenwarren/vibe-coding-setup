@@ -22,6 +22,8 @@
 
 * `create_memory_bank_files(memory_bank_path, original_project_name, project_description)`: Creates and populates the required files in the memory-bank directory using the template constants and project information. Uses the original, human-readable project name in file content for better readability.
 
+* `create_cursor_rules_file(cursor_path)`: Creates and populates the .cursor/rules file with boilerplate Cursor rules based on the Vibe Coding methodology. Returns the Path object for the created file.
+
 ## Template Constants
 
 * `PRODUCT_REQUIREMENTS_TEMPLATE`: Boilerplate content for the product-requirements-document.md file with placeholders for project_name and project_description.

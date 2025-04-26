@@ -1,6 +1,6 @@
 # System Architecture Overview
 
-**Project:** zzz-new
+**Project:** zzz test
 
 ---
 **Instructions for Use:**

@@ -1,6 +1,6 @@
 # Project Progress Tracker
 
-**Project:** zzz-new
+**Project:** zzz test
 
 ---
 **Instructions for Use:**
