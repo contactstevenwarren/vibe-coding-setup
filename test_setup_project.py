@@ -11,7 +11,8 @@ from setup_project import (
     get_project_name, 
     get_project_description, 
     create_project_directory,
-    create_subdirectories
+    create_subdirectories,
+    sanitize_project_name
 )
 
 class TestSetupProject(unittest.TestCase):
@@ -33,8 +34,37 @@ class TestSetupProject(unittest.TestCase):
         # Instead, we'll test individual components
         pass
     
-    def test_get_project_name_valid_input(self):
-        """Test that get_project_name accepts valid input."""
+    def test_sanitize_project_name(self):
+        """Test that sanitize_project_name correctly formats project names."""
+        test_cases = [
+            ("my project", "my-project"),
+            ("My Cool Project!", "My-Cool-Project"),
+            ("project with @#$special chars", "project-with-special-chars"),
+            ("--project--name--", "project--name"),
+            ("project_name", "project_name"),  # Underscores should be preserved
+            ("project-name", "project-name"),  # Already well-formatted
+            ("123 Project", "123-Project"),    # Numbers should be preserved
+        ]
+        
+        for input_name, expected_output in test_cases:
+            self.assertEqual(sanitize_project_name(input_name), expected_output)
+    
+    def test_get_project_name_sanitized(self):
+        """Test that get_project_name returns sanitized input."""
+        # Mock user entering a name with spaces and confirming sanitization
+        with unittest.mock.patch('builtins.input', side_effect=["test project", "y"]):
+            project_name = get_project_name()
+            self.assertEqual(project_name, "test-project")
+    
+    def test_get_project_name_reject_sanitization(self):
+        """Test that get_project_name allows rejecting sanitization."""
+        # Mock user entering a name with spaces, rejecting sanitization, then entering valid name
+        with unittest.mock.patch('builtins.input', side_effect=["test project", "n", "test-project"]):
+            project_name = get_project_name()
+            self.assertEqual(project_name, "test-project")
+    
+    def test_get_project_name_already_sanitized(self):
+        """Test that get_project_name accepts already sanitized input."""
         with unittest.mock.patch('builtins.input', return_value="test-project"):
             project_name = get_project_name()
             self.assertEqual(project_name, "test-project")

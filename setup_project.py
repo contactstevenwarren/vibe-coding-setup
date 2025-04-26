@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import sys
+import re
 
 # Boilerplate Content Templates
 PRODUCT_REQUIREMENTS_TEMPLATE = """# Product Requirements Document (PRD)
@@ -155,13 +156,35 @@ Next Steps:
 Happy Vibe Coding!
 """
 
+def sanitize_project_name(name):
+    """
+    Sanitize project name by replacing spaces with hyphens and removing special characters.
+    This helps avoid issues with file paths and terminal commands.
+    """
+    # Replace spaces with hyphens
+    sanitized = name.replace(" ", "-")
+    # Remove any characters that aren't alphanumeric, hyphens, or underscores
+    sanitized = re.sub(r'[^a-zA-Z0-9_\-]', '', sanitized)
+    # Ensure the name doesn't start or end with a hyphen
+    sanitized = sanitized.strip('-')
+    
+    return sanitized
+
 def get_project_name():
     """Prompt the user for a project name and validate it."""
     while True:
         project_name = input("Enter project name: ").strip()
-        if project_name:
-            return project_name
-        print("Error: Project name cannot be empty. Please try again.")
+        if not project_name:
+            print("Error: Project name cannot be empty. Please try again.")
+            continue
+            
+        sanitized_name = sanitize_project_name(project_name)
+        if sanitized_name != project_name:
+            confirm = input(f"Project name will be sanitized to '{sanitized_name}'. Proceed? (y/n): ").strip().lower()
+            if confirm != 'y':
+                continue
+        
+        return sanitized_name
 
 def get_project_description():
     """Prompt the user for a project description."""
