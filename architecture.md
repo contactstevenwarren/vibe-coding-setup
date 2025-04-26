@@ -22,7 +22,9 @@
 
 * `create_memory_bank_files(memory_bank_path, original_project_name, project_description)`: Creates and populates the required files in the memory-bank directory using the template constants and project information. Uses the original, human-readable project name in file content for better readability.
 
-* `create_cursor_rules_file(cursor_path)`: Creates and populates the .cursor/rules file with boilerplate Cursor rules based on the Vibe Coding methodology. Returns the Path object for the created file.
+* `create_cursor_rules_files(cursor_path)`: Creates a `rules` directory in the `.cursor` directory and populates it with multiple MDC rule files following Cursor best practices. Each rule file has proper metadata and a specific focus.
+
+* `print_post_execution_instructions(original_project_name, sanitized_project_name)`: Formats the post-execution instructions template with the project name and sanitized directory name, then prints them to the console with ASCII dividers for better terminal readability. The instructions include copyable prompts that match exactly what's in the MANUAL-VIBE-CODING.md document.
 
 ## Template Constants
 
@@ -36,7 +38,7 @@
 
 * `ARCHITECTURE_TEMPLATE`: Boilerplate content for the architecture.md file with a placeholder for project_name.
 
-* `CURSOR_RULES_TEMPLATE`: Boilerplate content for the .cursor/rules file with predefined cursor rules based on the Vibe Coding methodology.
+* `CURSOR_RULES_ARCHITECTURE`, `CURSOR_RULES_REQUIREMENTS`, `CURSOR_RULES_UPDATE_ARCHITECTURE`, `CURSOR_RULES_UPDATE_PROGRESS`, `CURSOR_RULES_VALIDATION_WORKFLOW`, `CURSOR_RULES_MODULARITY`, `CURSOR_RULES_README`: Template content for individual Cursor rule files in MDC format with appropriate metadata and focused functionality.
 
 * `POST_EXECUTION_INSTRUCTIONS`: Instructions to display to the user after successfully creating the project structure, with placeholders for project_name.
 

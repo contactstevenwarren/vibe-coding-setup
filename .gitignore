@@ -31,4 +31,9 @@ test_temp_dir/
 
 # OS specific
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Test directories
+testing-app/
+zzz-test/
+zzz-new/ 

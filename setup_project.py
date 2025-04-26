@@ -102,55 +102,121 @@ As your AI coding assistant (e.g., Claude in Cursor) creates files, components, 
 
 """
 
-CURSOR_RULES_TEMPLATE = """# Cursor Rules - Boilerplate from Vibe Coding Setup
-# IMPORTANT: Review, refine, and add rules specific to your project and tech stack!
-# Consider using the `/Generate Cursor Rules` command in Cursor after filling the memory bank.
+# Update template constants for Cursor rules
+CURSOR_RULES_ARCHITECTURE = """---
+description: Enforce reading architecture documentation
+type: Always
+---
 
-rules:
-  - trigger: "Always"
-    response: "Always read memory-bank/architecture.md before writing any code. Include entire database schema if applicable."
-    enabled: true
+Always read memory-bank/architecture.md before writing any code. Include entire database schema if applicable.
+"""
 
-  - trigger: "Always"
-    response: "Always read memory-bank/product-requirements-document.md before writing any code."
-    enabled: true
+CURSOR_RULES_REQUIREMENTS = """---
+description: Enforce reading requirements documentation
+type: Always
+---
 
-  - trigger: "Default"
-    response: "After adding a major feature or completing a milestone, update memory-bank/architecture.md."
-    enabled: true
+Always read memory-bank/product-requirements-document.md before writing any code.
+"""
 
-  - trigger: "Default"
-    response: "Emphasize modularity (multiple files) and avoid creating monolithic files."
-    enabled: true
+CURSOR_RULES_UPDATE_ARCHITECTURE = """---
+description: Remember to update architecture documentation
+type: Default
+---
 
-  # Add more rules below, especially for your specific tech stack (e.g., state management, API design, testing).
-  # Example:
-  # - trigger: "On File Save *.js"
-  #   response: "Ensure code adheres to ESLint rules configured in the project."
-  #   enabled: true
+After adding a major feature or completing a milestone, update memory-bank/architecture.md.
+"""
+
+CURSOR_RULES_UPDATE_PROGRESS = """---
+description: Remember to update progress tracker
+type: Default
+---
+
+After completing a milestone or implementation step, update memory-bank/progress.md with details about what was accomplished.
+"""
+
+CURSOR_RULES_VALIDATION_WORKFLOW = """---
+description: Implementation step validation workflow
+type: Always
+---
+
+For each implementation step from the implementation plan:
+
+1. Complete the implementation for the current step only
+2. Ask the user to validate and confirm before proceeding to the next step
+3. Once validated:
+   - Update memory-bank/progress.md with details about the completed step
+   - Update memory-bank/architecture.md if the step involved new components or structures
+   - Commit changes to git with a descriptive message
+4. Only after validation, proceed to the next implementation step
+"""
+
+CURSOR_RULES_MODULARITY = """---
+description: Enforce code modularity
+type: Default
+---
+
+Emphasize modularity (multiple files) and avoid creating monolithic files.
+"""
+
+CURSOR_RULES_README = """---
+description: Guide for adding more rules
+type: Manual
+---
+
+# Add more rules below, especially for your specific tech stack
+Examples:
+- State management patterns
+- API design principles
+- Testing requirements
+- Styling conventions
+
+Use the `/Generate Cursor Rules` command in Cursor to generate more rules based on your memory bank files.
 """
 
 POST_EXECUTION_INSTRUCTIONS = """✅ Project '{project_name}' structure created successfully!
 
 Next Steps:
 
-1.  **Open the project folder in Cursor:**
-    cd {project_name}
-    cursor .
-2.  **Generate Memory Bank Content:**
-    *   Open `memory-bank/product-requirements-document.md`. Follow the instructions inside to generate the content using an LLM (like Gemini 2.5 Pro).
-    *   Open `memory-bank/tech-stack.md`. Follow the instructions inside, using your PRD, to generate the content.
-    *   Open `memory-bank/implementation-plan.md`. Follow the instructions inside, using your PRD and tech stack, to generate the plan.
-3.  **Review and Refine Cursor Rules:**
-    *   Open `.cursor/rules`. A boilerplate file has been created based on the Vibe Coding guide.
-    *   **Crucially:** Review these rules. Adjust triggers (e.g., "Always" vs "Default") as needed.
-    *   Add rules specific to your chosen tech stack and project requirements.
-    *   You can also use the `/Generate Cursor Rules` command in Cursor (Command Palette -> "Configure Rules for '.cursor'") to potentially add more rules based on your memory bank files, then merge/refine.
-4.  **Start Coding with Claude:**
-    *   Open `memory-bank/architecture.md` and `memory-bank/progress.md` and remove the initial instruction blocks.
-    *   Use Claude Sonnet 3.7 in Cursor: Read all the documents in /memory-bank, is implementation-plan.md clear? What are your questions to make it 100% clear for you?
-    *   Claude Sonnet 3.7 Thinking in Cursor: Read all the documents in /memory-bank, and proceed with Step 1 of the implementation plan. I will run the tests. Do not start Step 2 until I validate the tests. Once I validate them, open progress.md and document what you did for future developers. Then add any architectural insights to architecture.md to explain what each file does. And finally use Git for version control (`git init`, `git add .`, `git commit -m "Initial setup"`).
-    *   Continue workflow: Now go through all files in the memory-bank, read progress.md to understand prior work, and proceed with Step 2. Do not start Step 3 until I validate the test. Repeat this process until the entire implementation-plan.md is complete.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. OPEN THE PROJECT FOLDER IN CURSOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    $ cd {directory_name}
+    $ cursor .
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. GENERATE MEMORY BANK CONTENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    • Open `memory-bank/product-requirements-document.md` and follow the instructions
+    • Open `memory-bank/tech-stack.md` and follow the instructions
+    • Open `memory-bank/implementation-plan.md` and follow the instructions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. REVIEW AND REFINE CURSOR RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    • The `.cursor/rules` directory contains MDC rule files based on Vibe Coding guide
+    • Review these rules in the Cursor editor 
+    • Add rules specific to your chosen tech stack
+    • Use `/Generate Cursor Rules` command for additional rules
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. START CODING WITH CLAUDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    • First, select Claude Sonnet 3.7 Thinking in Cursor
+    
+    • Initial prompt (copy & paste this):
+      
+      Read all the documents in /memory-bank, and proceed with Step 1 of the implementation plan. I will run the tests. Do not start Step 2 until I validate the tests. Once I validate them, open progress.md and document what you did for future developers. Then add any architectural insights to architecture.md to explain what each file does.
+    
+    • After validating Step 1 and committing your changes, continue with (copy & paste):
+      
+      Now go through all files in the memory-bank, read progress.md to understand prior work, and proceed with Step 2. Do not start Step 3 until I validate the test.
+    
+    • Repeat this process for each step until the entire implementation-plan.md is complete
 
 
 Happy Vibe Coding!
@@ -262,25 +328,65 @@ def create_memory_bank_files(memory_bank_path, original_project_name, project_de
             
     return created_files
 
-def create_cursor_rules_file(cursor_path):
+def create_cursor_rules_files(cursor_path):
     """
-    Create and populate the .cursor/rules file.
+    Create and populate the .cursor/rules directory with MDC rule files.
     
     Args:
         cursor_path: Path object for the .cursor directory
     """
-    rules_file_path = cursor_path / "rules"
+    # Create rules directory if it doesn't exist
+    rules_dir = cursor_path / "rules"
+    if not rules_dir.exists():
+        rules_dir.mkdir(exist_ok=True)
     
-    try:
-        # Write the content to the file
-        with open(rules_file_path, 'w', encoding='utf-8') as f:
-            f.write(CURSOR_RULES_TEMPLATE)
+    # Define the rules to create
+    rules_to_create = {
+        "architecture.mdc": CURSOR_RULES_ARCHITECTURE,
+        "requirements.mdc": CURSOR_RULES_REQUIREMENTS,
+        "update_architecture.mdc": CURSOR_RULES_UPDATE_ARCHITECTURE,
+        "update_progress.mdc": CURSOR_RULES_UPDATE_PROGRESS,
+        "validation_workflow.mdc": CURSOR_RULES_VALIDATION_WORKFLOW,
+        "modularity.mdc": CURSOR_RULES_MODULARITY,
+        "readme.mdc": CURSOR_RULES_README
+    }
+    
+    created_files = []
+    
+    # Create each rule file with the appropriate content
+    for filename, content in rules_to_create.items():
+        file_path = rules_dir / filename
+        
+        try:
+            # Write the content to the file
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+                
+            print(f"Created rule file: {file_path}")
+            created_files.append(file_path)
+        except Exception as e:
+            print(f"Error creating {filename}: {e}")
             
-        print(f"Created file: {rules_file_path}")
-        return rules_file_path
-    except Exception as e:
-        print(f"Error creating .cursor/rules file: {e}")
-        return None
+    return created_files
+
+def print_post_execution_instructions(original_project_name, sanitized_project_name):
+    """
+    Format and print post-execution instructions to the user.
+    
+    Args:
+        original_project_name: Original human-readable name of the project
+        sanitized_project_name: Sanitized name of the project used for directory
+    """
+    # Format the instructions with the project name and directory name
+    instructions = POST_EXECUTION_INSTRUCTIONS.format(
+        project_name=original_project_name,
+        directory_name=sanitized_project_name
+    )
+    
+    # Print the formatted instructions
+    print("\n" + "-" * 80)
+    print(instructions)
+    print("-" * 80 + "\n")
 
 if __name__ == "__main__":
     print("Vibe Coding Project Setup Script")
@@ -292,11 +398,13 @@ if __name__ == "__main__":
     # Create memory-bank files with the original project name for content
     memory_bank_files = create_memory_bank_files(memory_bank_path, original_project_name, project_description)
     
-    # Create .cursor/rules file
-    cursor_rules_file = create_cursor_rules_file(cursor_path)
+    # Create .cursor/rules files
+    cursor_rules_files = create_cursor_rules_files(cursor_path)
     
     print(f"Project name: {original_project_name}")
     print(f"Sanitized directory name: {sanitized_project_name}")
     print(f"Project description: {project_description}")
     print(f"Project directory: {project_path}")
-    # Later steps will add more functionality here 
+    
+    # Print post-execution instructions
+    print_post_execution_instructions(original_project_name, sanitized_project_name) 

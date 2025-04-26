@@ -24,7 +24,12 @@
 
 * **[2024-07-29] - Step 8: Create and Populate .cursor/rules File** - Implemented functionality to create and populate the .cursor/rules file with boilerplate Cursor rules based on the Vibe Coding methodology. Added tests to verify the file is created correctly and contains the expected content.
 
+* **[2024-07-29] - Improvement: MDC-Formatted Cursor Rules** - Updated the Cursor rules implementation to follow best practices from the Cursor documentation. Instead of a single rules file, now creates multiple focused MDC rule files with proper metadata in a `rules` directory. This aligns with Cursor's recommended approach for project rules.
+
+* **[2024-07-29] - Step 9: Print Post-Execution Instructions** - Implemented functionality to format and print post-execution instructions to the user after creating the project structure. The instructions guide the user on how to open the project in Cursor, generate content for the memory bank files, review and refine the Cursor rules, and start coding with Claude.
+
+* **[2024-07-29] - Improvement: CLI-Friendly Post-Execution Instructions** - Redesigned the post-execution instructions for better terminal readability, using ASCII dividers and clearer formatting. Updated the prompts to match exactly what's in MANUAL-VIBE-CODING.md, making them easier to copy and paste without modifications. Added clear instructions about selecting Claude Sonnet 3.7 and the workflow between steps.
+
 ## Next Steps
 
-* Step 9: Print Post-Execution Instructions
 * Step 10: Code Cleanup and Comments 

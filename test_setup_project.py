@@ -14,8 +14,11 @@ from setup_project import (
     create_subdirectories,
     sanitize_project_name,
     create_memory_bank_files,
-    create_cursor_rules_file,
-    CURSOR_RULES_TEMPLATE
+    create_cursor_rules_files,
+    print_post_execution_instructions,
+    CURSOR_RULES_ARCHITECTURE,
+    CURSOR_RULES_REQUIREMENTS,
+    POST_EXECUTION_INSTRUCTIONS
 )
 
 class TestSetupProject(unittest.TestCase):
@@ -168,8 +171,8 @@ class TestSetupProject(unittest.TestCase):
                     if filename == "product-requirements-document.md":
                         self.assertIn(test_project_description, content)
 
-    def test_create_cursor_rules_file(self):
-        """Test that create_cursor_rules_file creates the rules file with correct content."""
+    def test_create_cursor_rules_files(self):
+        """Test that create_cursor_rules_files creates the rules files with correct content."""
         # Create a project directory and .cursor subdirectory for testing
         test_project_dir = self.test_dir / "test-project"
         test_project_dir.mkdir()
@@ -178,20 +181,61 @@ class TestSetupProject(unittest.TestCase):
         
         # Capture stdout to prevent output during tests
         with unittest.mock.patch('sys.stdout', new=io.StringIO()):
-            rules_file_path = create_cursor_rules_file(cursor_path)
+            created_files = create_cursor_rules_files(cursor_path)
             
-            # Check that the file exists
-            self.assertTrue(rules_file_path.exists(), "rules file was not created")
+            # Check that the rules directory exists
+            rules_dir = cursor_path / "rules"
+            self.assertTrue(rules_dir.exists(), "rules directory was not created")
             
-            # Check that the file contains the correct content
-            with open(rules_file_path, 'r', encoding='utf-8') as f:
+            # Check that we have the expected number of rule files
+            self.assertEqual(len(created_files), 7, "Not all rule files were created")
+            
+            # Check that specific rule files exist and contain the right content
+            architecture_rule = rules_dir / "architecture.mdc"
+            self.assertTrue(architecture_rule.exists(), "architecture.mdc was not created")
+            
+            requirements_rule = rules_dir / "requirements.mdc"
+            self.assertTrue(requirements_rule.exists(), "requirements.mdc was not created")
+            
+            # Check content of a couple of rule files
+            with open(architecture_rule, 'r', encoding='utf-8') as f:
                 content = f.read()
-                self.assertEqual(content, CURSOR_RULES_TEMPLATE)
-                
-                # Check for key elements in the rules file
-                self.assertIn("Cursor Rules - Boilerplate", content)
-                self.assertIn("rules:", content)
-                self.assertIn('response: "Always read memory-bank/architecture.md', content)
+                self.assertEqual(content, CURSOR_RULES_ARCHITECTURE)
+                # Check for MDC format
+                self.assertIn("---", content)
+                self.assertIn("description:", content)
+                self.assertIn("type: Always", content)
+            
+            with open(requirements_rule, 'r', encoding='utf-8') as f:
+                content = f.read()
+                self.assertEqual(content, CURSOR_RULES_REQUIREMENTS)
+                self.assertIn("description:", content)
+                self.assertIn("type: Always", content)
+
+    def test_print_post_execution_instructions(self):
+        """Test that print_post_execution_instructions formats and prints instructions correctly."""
+        test_original_name = "My Test Project"
+        test_sanitized_name = "My-Test-Project"
+        
+        # Capture stdout to check for printed instructions
+        with unittest.mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
+            print_post_execution_instructions(test_original_name, test_sanitized_name)
+            
+            # Get the captured output
+            output = fake_stdout.getvalue()
+            
+            # Check that the output contains the project name and directory name
+            self.assertIn(test_original_name, output)
+            self.assertIn(test_sanitized_name, output)
+            self.assertIn(f"$ cd {test_sanitized_name}", output)
+            
+            # Check that the output contains key sections from the instructions
+            self.assertIn("structure created successfully", output)
+            self.assertIn("OPEN THE PROJECT FOLDER IN CURSOR", output)
+            self.assertIn("GENERATE MEMORY BANK CONTENT", output)
+            self.assertIn("REVIEW AND REFINE CURSOR RULES", output)
+            self.assertIn("START CODING WITH CLAUDE", output)
+            self.assertIn("Happy Vibe Coding", output)
 
 if __name__ == "__main__":
     unittest.main() 
