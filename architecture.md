@@ -1,64 +1,117 @@
-# System Architecture Overview
+# System Architecture Document
 
 **Project:** Vibe Coding Project Setup Script
 
 ## File/Component Index
 
-* `setup_project.py`: Main script file that implements the Vibe Coding project setup functionality. It handles user input, directory creation, and file generation.
+* **script.py** - Main Python script file responsible for creating project structure
+* **memory-bank/** - Directory for project documentation templates
+  * **product-requirements-document.md** - Template for product requirements
+  * **tech-stack.md** - Template for technology stack documentation
+  * **implementation-plan.md** - Template for implementation plan
+  * **progress.md** - Template for tracking project progress
+  * **architecture.md** - Template for system architecture documentation
+* **.cursor/rules/** - Directory for Cursor IDE rules
+  * **01-vibe-coding-intro.mdc** - Introduction to Vibe Coding methodology
+  * **02-memory-bank-access.mdc** - Rules for memory bank access
+  * **03-implementation-guidelines.mdc** - Implementation guidelines
+  * **04-documentation.mdc** - Documentation rules
 
-* `test_setup_project.py`: Test suite for the setup_project.py script. Contains unit tests for each function to ensure they work as expected.
+## Functions
 
-## Function Descriptions
-
-* `sanitize_project_name(name)`: Sanitizes the project name by replacing spaces with hyphens and removing special characters. This ensures that project directory names are terminal and filesystem friendly.
-
-* `get_project_name()`: Prompts the user for a project name, sanitizes it, and informs the user if sanitization occurs. It returns both the original, human-readable name (for file content) and the sanitized name (for file/directory paths).
-
-* `get_project_description()`: Prompts the user for a brief project description and returns it.
-
-* `create_project_directory(sanitized_project_name)`: Creates the root project directory based on the provided sanitized project name. It checks if the directory already exists and exits with an error if it does. Returns the Path object for the created directory.
-
-* `create_subdirectories(project_path)`: Creates the required subdirectories (memory-bank and .cursor) within the project directory. Returns the Path objects for the created subdirectories.
-
-* `create_memory_bank_files(memory_bank_path, original_project_name, project_description)`: Creates and populates the required files in the memory-bank directory using the template constants and project information. Uses the original, human-readable project name in file content for better readability.
-
-* `create_cursor_rules_files(cursor_path)`: Creates a `rules` directory in the `.cursor` directory and populates it with multiple MDC rule files following Cursor best practices. Each rule file has proper metadata and a specific focus.
-
-* `print_post_execution_instructions(original_project_name, sanitized_project_name)`: Formats the post-execution instructions template with the project name and sanitized directory name, then prints them to the console with ASCII dividers for better terminal readability. The instructions include copyable prompts that match exactly what's in the MANUAL-VIBE-CODING.md document.
-
-## Template Constants
-
-* `PRODUCT_REQUIREMENTS_TEMPLATE`: Boilerplate content for the product-requirements-document.md file with placeholders for project_name and project_description.
-
-* `TECH_STACK_TEMPLATE`: Boilerplate content for the tech-stack.md file with a placeholder for project_name.
-
-* `IMPLEMENTATION_PLAN_TEMPLATE`: Boilerplate content for the implementation-plan.md file with a placeholder for project_name.
-
-* `PROGRESS_TEMPLATE`: Boilerplate content for the progress.md file with a placeholder for project_name.
-
-* `ARCHITECTURE_TEMPLATE`: Boilerplate content for the architecture.md file with a placeholder for project_name.
-
-* `CURSOR_RULES_ARCHITECTURE`, `CURSOR_RULES_REQUIREMENTS`, `CURSOR_RULES_UPDATE_ARCHITECTURE`, `CURSOR_RULES_UPDATE_PROGRESS`, `CURSOR_RULES_VALIDATION_WORKFLOW`, `CURSOR_RULES_MODULARITY`, `CURSOR_RULES_README`: Template content for individual Cursor rule files in MDC format with appropriate metadata and focused functionality.
-
-* `POST_EXECUTION_INSTRUCTIONS`: Instructions to display to the user after successfully creating the project structure, with placeholders for project_name.
+* `sanitize_project_name(name)` - Transforms project name into a filesystem-friendly format (converts spaces to hyphens, removes special characters)
+* `get_project_name()` - Prompts user for project name with validation
+* `get_project_description()` - Prompts user for project description
+* `create_root_directory(sanitized_name)` - Creates the root project directory
+* `create_subdirectories(root_dir)` - Creates required subdirectories 
+* `create_memory_bank_files(root_dir, project_name, project_description)` - Creates and populates memory-bank files
+* `create_cursor_rules(root_dir)` - Creates and populates Cursor rules files
+* `print_post_execution_instructions(root_dir, project_name)` - Displays formatted instructions
+* `main()` - Main execution function
+* `handle_error(e, message)` - Handles exceptions with user-friendly error messages
 
 ## Project Structure
 
-The script creates the following directory structure:
-
 ```
-<project-name>/
+project-name/
 ├── memory-bank/
+│   ├── product-requirements-document.md
+│   ├── tech-stack.md
+│   ├── implementation-plan.md
+│   ├── progress.md
+│   └── architecture.md
 └── .cursor/
+    └── rules/
+        ├── 01-vibe-coding-intro.mdc
+        ├── 02-memory-bank-access.mdc
+        ├── 03-implementation-guidelines.mdc
+        └── 04-documentation.mdc
 ```
 
 ## Data Flow
 
-1. The script prompts the user for a project name and description
-2. It creates the root project directory with the provided name
-3. It creates the required subdirectories within the root directory
+1. User input collection (project name, description)
+2. Sanitization of project name
+3. Directory structure creation
+4. File creation with templated content
+5. Post-execution instructions output
 
-In the future implementations, it will:
-1. Populate the subdirectories with required files
-2. Generate boilerplate content for each file
-3. Print instructions for next steps 
+## Error Handling Strategy
+
+The script implements comprehensive error handling to ensure robustness:
+
+1. **Input Validation** - Ensures all user inputs meet required criteria before proceeding
+2. **File System Error Handling** - Gracefully manages existing directories and permission issues
+3. **Exception Handling** - Custom error handling with user-friendly messages
+4. **Validation Feedback** - Provides immediate feedback when input requires sanitization
+
+## Key Design Decisions
+
+1. **Project Name Sanitization**
+   * Converts spaces to hyphens
+   * Removes special characters
+   * Preserves original name for display in content
+   * Provides feedback to user when sanitization occurs
+
+2. **Template System**
+   * Uses Python string formatting with named placeholders
+   * Templates stored as constants for easy maintenance
+   * Consistent formatting across all generated files
+
+3. **File Organization**
+   * Separation of memory-bank documentation from IDE configuration
+   * Consistent naming conventions for all files
+   * Logical directory structure that separates concerns
+
+4. **Cursor Rules Implementation**
+   * Multiple specialized rule files instead of a single file
+   * MDC format with proper metadata
+   * Progressive rule organization (01, 02, etc.)
+   * Rules aligned with Vibe Coding methodology
+
+5. **Code Organization**
+   * Modular function design with single responsibilities
+   * Clear separation between user interaction and file operations
+   * Consistent error handling pattern throughout codebase
+   * Comprehensive docstrings for all functions
+
+## Execution Flow
+
+1. Script execution begins
+2. User prompted for project name (with validation)
+3. User prompted for project description
+4. Project name sanitized if necessary
+5. Root directory created
+6. Subdirectories created
+7. Memory-bank files created and populated
+8. Cursor rules files created and populated
+9. Post-execution instructions displayed
+10. Script terminates successfully
+
+## Future Enhancement Considerations
+
+1. Command-line argument support for non-interactive execution
+2. Custom template directory option
+3. Configuration file support for advanced customization
+4. Additional memory-bank template options
+5. Integration with version control systems 
