@@ -55,25 +55,28 @@ class TestSetupProject(unittest.TestCase):
         # Mock user entering a name with spaces
         with unittest.mock.patch('builtins.input', return_value="test project"):
             with unittest.mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
-                project_name = get_project_name()
-                self.assertEqual(project_name, "test-project")
-                self.assertIn("Project name sanitized to", fake_stdout.getvalue())
+                original_name, sanitized_name = get_project_name()
+                self.assertEqual(original_name, "test project")
+                self.assertEqual(sanitized_name, "test-project")
+                self.assertIn("sanitized to", fake_stdout.getvalue())
     
     def test_get_project_name_already_sanitized(self):
-        """Test that get_project_name accepts already sanitized input."""
+        """Test that get_project_name handles already sanitized input."""
         with unittest.mock.patch('builtins.input', return_value="test-project"):
             with unittest.mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
-                project_name = get_project_name()
-                self.assertEqual(project_name, "test-project")
-                self.assertNotIn("Project name sanitized to", fake_stdout.getvalue())
+                original_name, sanitized_name = get_project_name()
+                self.assertEqual(original_name, "test-project")
+                self.assertEqual(sanitized_name, "test-project")
+                self.assertNotIn("sanitized to", fake_stdout.getvalue())
     
     def test_get_project_name_empty_then_valid(self):
         """Test that get_project_name rejects empty input then accepts valid input."""
         # Mock input to first return empty string, then valid string
         with unittest.mock.patch('builtins.input', side_effect=["", "  ", "valid-name"]):
             with unittest.mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
-                project_name = get_project_name()
-                self.assertEqual(project_name, "valid-name")
+                original_name, sanitized_name = get_project_name()
+                self.assertEqual(original_name, "valid-name")
+                self.assertEqual(sanitized_name, "valid-name")
                 self.assertIn("Error: Project name cannot be empty", fake_stdout.getvalue())
     
     def test_get_project_description(self):
@@ -126,13 +129,13 @@ class TestSetupProject(unittest.TestCase):
         memory_bank_path = test_project_dir / "memory-bank"
         memory_bank_path.mkdir()
         
-        # Test data
-        test_project_name = "test-project"
+        # Test data - using different original and sanitized names to verify the original is used in content
+        test_original_name = "My Test Project"
         test_project_description = "This is a test project"
         
         # Capture stdout to prevent output during tests
         with unittest.mock.patch('sys.stdout', new=io.StringIO()):
-            created_files = create_memory_bank_files(memory_bank_path, test_project_name, test_project_description)
+            created_files = create_memory_bank_files(memory_bank_path, test_original_name, test_project_description)
             
             # Check that the expected number of files were created
             self.assertEqual(len(created_files), 5)
@@ -150,10 +153,14 @@ class TestSetupProject(unittest.TestCase):
                 file_path = memory_bank_path / filename
                 self.assertTrue(file_path.exists(), f"{filename} was not created")
                 
-                # Check that the file contains the project name
+                # Check that the file contains the original, human-readable project name
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                    self.assertIn(test_project_name, content)
+                    self.assertIn(test_original_name, content)
+                    # Make sure the sanitized name is not mistakenly used
+                    sanitized_test_name = sanitize_project_name(test_original_name)
+                    if sanitized_test_name != test_original_name:
+                        self.assertNotIn(sanitized_test_name, content)
                     
                     # For PRD, also check for project description
                     if filename == "product-requirements-document.md":

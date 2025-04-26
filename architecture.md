@@ -12,15 +12,15 @@
 
 * `sanitize_project_name(name)`: Sanitizes the project name by replacing spaces with hyphens and removing special characters. This ensures that project directory names are terminal and filesystem friendly.
 
-* `get_project_name()`: Prompts the user for a project name, sanitizes it, and informs the user if sanitization occurs. It will continue prompting until a valid name is provided.
+* `get_project_name()`: Prompts the user for a project name, sanitizes it, and informs the user if sanitization occurs. It returns both the original, human-readable name (for file content) and the sanitized name (for file/directory paths).
 
 * `get_project_description()`: Prompts the user for a brief project description and returns it.
 
-* `create_project_directory(project_name)`: Creates the root project directory based on the provided project name. It checks if the directory already exists and exits with an error if it does. Returns the Path object for the created directory.
+* `create_project_directory(sanitized_project_name)`: Creates the root project directory based on the provided sanitized project name. It checks if the directory already exists and exits with an error if it does. Returns the Path object for the created directory.
 
 * `create_subdirectories(project_path)`: Creates the required subdirectories (memory-bank and .cursor) within the project directory. Returns the Path objects for the created subdirectories.
 
-* `create_memory_bank_files(memory_bank_path, project_name, project_description)`: Creates and populates the required files in the memory-bank directory (product-requirements-document.md, tech-stack.md, implementation-plan.md, progress.md, and architecture.md) using the template constants and project information.
+* `create_memory_bank_files(memory_bank_path, original_project_name, project_description)`: Creates and populates the required files in the memory-bank directory using the template constants and project information. Uses the original, human-readable project name in file content for better readability.
 
 ## Template Constants
 

@@ -20,6 +20,8 @@
 
 * **[2024-07-29] - Step 7: Create and Populate memory-bank Files** - Implemented functionality to create and populate the five required Markdown files in the memory-bank directory (product-requirements-document.md, tech-stack.md, implementation-plan.md, progress.md, and architecture.md) with appropriate template content. Added tests to verify that files are created correctly and contain the right content.
 
+* **[2024-07-29] - Improvement: Human-Readable Names in Content** - Modified the code to use the original, human-readable project name in file content while using the sanitized name for directories and file paths. This ensures that directories work well with command line tools but displayed content is more user-friendly.
+
 ## Next Steps
 
 * Step 8: Create and Populate .cursor/rules File

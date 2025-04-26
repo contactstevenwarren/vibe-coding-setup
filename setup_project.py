@@ -180,20 +180,21 @@ def get_project_name():
             
         sanitized_name = sanitize_project_name(project_name)
         if sanitized_name != project_name:
-            print(f"Project name sanitized to '{sanitized_name}' for compatibility.")
+            print(f"Project name sanitized to '{sanitized_name}' for directory and file paths.")
         
-        return sanitized_name
+        # Return both the original and sanitized names
+        return project_name, sanitized_name
 
 def get_project_description():
     """Prompt the user for a project description."""
     return input("Enter a brief project description: ").strip()
 
-def create_project_directory(project_name):
+def create_project_directory(sanitized_project_name):
     """Create the root project directory. Exit if it already exists."""
-    project_path = Path.cwd() / project_name
+    project_path = Path.cwd() / sanitized_project_name
     
     if project_path.exists():
-        print(f"Error: Directory '{project_name}' already exists. Please choose a different name.")
+        print(f"Error: Directory '{sanitized_project_name}' already exists. Please choose a different name.")
         sys.exit(1)
     
     try:
@@ -219,13 +220,13 @@ def create_subdirectories(project_path):
         print(f"Error creating subdirectories: {e}")
         sys.exit(1)
 
-def create_memory_bank_files(memory_bank_path, project_name, project_description):
+def create_memory_bank_files(memory_bank_path, original_project_name, project_description):
     """
     Create and populate the required files in the memory-bank directory.
     
     Args:
         memory_bank_path: Path object for the memory-bank directory
-        project_name: Name of the project
+        original_project_name: Original human-readable project name for file content
         project_description: Description of the project
     """
     # Define the files to create and their content templates
@@ -244,9 +245,9 @@ def create_memory_bank_files(memory_bank_path, project_name, project_description
         file_path = memory_bank_path / filename
         
         try:
-            # Format the template with project details
+            # Format the template with project details, using the original name for content
             content = template.format(
-                project_name=project_name,
+                project_name=original_project_name,
                 project_description=project_description
             )
             
@@ -263,15 +264,16 @@ def create_memory_bank_files(memory_bank_path, project_name, project_description
 
 if __name__ == "__main__":
     print("Vibe Coding Project Setup Script")
-    project_name = get_project_name()
+    original_project_name, sanitized_project_name = get_project_name()
     project_description = get_project_description()
-    project_path = create_project_directory(project_name)
+    project_path = create_project_directory(sanitized_project_name)
     memory_bank_path, cursor_path = create_subdirectories(project_path)
     
-    # Create memory-bank files
-    memory_bank_files = create_memory_bank_files(memory_bank_path, project_name, project_description)
+    # Create memory-bank files with the original project name for content
+    memory_bank_files = create_memory_bank_files(memory_bank_path, original_project_name, project_description)
     
-    print(f"Project name: {project_name}")
+    print(f"Project name: {original_project_name}")
+    print(f"Sanitized directory name: {sanitized_project_name}")
     print(f"Project description: {project_description}")
     print(f"Project directory: {project_path}")
     # Later steps will add more functionality here 
