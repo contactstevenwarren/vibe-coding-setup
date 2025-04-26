@@ -83,17 +83,6 @@ PROGRESS_TEMPLATE = """# Project Progress Tracker
 
 **Project:** {project_name}
 
----
-**Instructions for Use:**
-
-As you complete steps from the `03-implementation-plan.md` using your AI coding assistant (e.g., Claude in Cursor), document the completed step, the date, and any relevant details (like the commit hash) here. This helps track progress and provides context for future work.
-
-**Format:**
-*   **[YYYY-MM-DD] - Step X: [Description of Step Completed]** - (Commit: `[hash]`, Notes: [Optional notes])
-
-*(Delete these instructions before starting to log progress)*
----
-
 ## Completed Steps
 
 """
@@ -102,19 +91,6 @@ As you complete steps from the `03-implementation-plan.md` using your AI coding 
 ARCHITECTURE_TEMPLATE = """# System Architecture Overview
 
 **Project:** {project_name}
-
----
-**Instructions for Use:**
-
-As your AI coding assistant (e.g., Claude in Cursor) creates files, components, database schemas, or important data structures, document their purpose and how they interact here. This serves as a living reference for both you and the AI. Update this regularly, especially after adding major features or making significant architectural changes.
-
-**Example Sections:**
-*   File/Component Index (`path/to/file.ext`: Purpose)
-*   Data Structures / Schema (Database tables, API interfaces, key state objects)
-*   Diagrams (Consider adding Mermaid diagrams later: `https://mermaid.js.org/`)
-
-*(Delete these instructions before starting to document the architecture)*
----
 
 ## File/Component Index
 
