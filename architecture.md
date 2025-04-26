@@ -18,6 +18,22 @@
 
 * `create_subdirectories(project_path)`: Creates the required subdirectories (memory-bank and .cursor) within the project directory. Returns the Path objects for the created subdirectories.
 
+## Template Constants
+
+* `PRODUCT_REQUIREMENTS_TEMPLATE`: Boilerplate content for the product-requirements-document.md file with placeholders for project_name and project_description.
+
+* `TECH_STACK_TEMPLATE`: Boilerplate content for the tech-stack.md file with a placeholder for project_name.
+
+* `IMPLEMENTATION_PLAN_TEMPLATE`: Boilerplate content for the implementation-plan.md file with a placeholder for project_name.
+
+* `PROGRESS_TEMPLATE`: Boilerplate content for the progress.md file with a placeholder for project_name.
+
+* `ARCHITECTURE_TEMPLATE`: Boilerplate content for the architecture.md file with a placeholder for project_name.
+
+* `CURSOR_RULES_TEMPLATE`: Boilerplate content for the .cursor/rules file with predefined cursor rules based on the Vibe Coding methodology.
+
+* `POST_EXECUTION_INSTRUCTIONS`: Instructions to display to the user after successfully creating the project structure, with placeholders for project_name.
+
 ## Project Structure
 
 The script creates the following directory structure:
