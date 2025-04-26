@@ -1,10 +1,28 @@
 #!/usr/bin/env python3
+"""
+Vibe Coding Project Setup Script
+
+This script automates the initial setup phase for a "Vibe Coding" project, creating the necessary
+directory structure and populating it with template files to prepare for development using LLMs like
+Gemini and Claude in the Cursor IDE.
+
+The script creates:
+- A root project directory (with sanitized name for filesystem compatibility)
+- memory-bank/ directory with template markdown files
+- .cursor/rules/ directory with MDC-formatted rule files
+
+Based on the implementation plan in /memory-bank/IMPLEMENTATION-PLAN.md
+"""
 
 from pathlib import Path
 import sys
 import re
 
-# Boilerplate Content Templates
+# ===================================================================================
+# Template Constants
+# ===================================================================================
+
+# Template for 01-product-design-document.md (previously product-requirements-document.md)
 PRODUCT_REQUIREMENTS_TEMPLATE = """# Product Requirements Document (PRD)
 
 **Project:** {project_name}
@@ -26,6 +44,7 @@ Please include sections for: Overview, Core Features (with brief descriptions), 
 ---
 """
 
+# Template for 02-tech-stack.md
 TECH_STACK_TEMPLATE = """# Tech Stack Recommendations
 
 **Project:** {project_name}
@@ -33,15 +52,16 @@ TECH_STACK_TEMPLATE = """# Tech Stack Recommendations
 ---
 **Instructions for Generation:**
 
-Use an LLM (like Gemini 2.5 Pro) to recommend a suitable tech stack for your project. Provide the LLM with the content of your `product-requirements-document.md`. Ask for the simplest yet most robust stack possible for your requirements.
+Use an LLM (like Gemini 2.5 Pro) to recommend a suitable tech stack for your project. Provide the LLM with the content of your `01-product-design-document.md`. Ask for the simplest yet most robust stack possible for your requirements.
 
 **Example Prompt for LLM:**
-"Based on the attached Product Requirements Document (`product-requirements-document.md`) for my project '{project_name}', please recommend the simplest yet most robust tech stack. Consider frontend, backend (if applicable), database, and any key libraries or frameworks. Explain the reasoning behind your choices."
+"Based on the attached Product Requirements Document (`01-product-design-document.md`) for my project '{project_name}', please recommend the simplest yet most robust tech stack. Consider frontend, backend (if applicable), database, and any key libraries or frameworks. Explain the reasoning behind your choices."
 
-*(Attach or paste the content of `product-requirements-document.md` when prompting. Delete these instructions once the tech stack is defined)*
+*(Attach or paste the content of `01-product-design-document.md` when prompting. Delete these instructions once the tech stack is defined)*
 ---
 """
 
+# Template for 03-implementation-plan.md
 IMPLEMENTATION_PLAN_TEMPLATE = """# Implementation Plan
 
 **Project:** {project_name}
@@ -49,15 +69,16 @@ IMPLEMENTATION_PLAN_TEMPLATE = """# Implementation Plan
 ---
 **Instructions for Generation:**
 
-Use an LLM (like Gemini 2.5 Pro) to create a detailed, step-by-step implementation plan. Provide the LLM with both your `product-requirements-document.md` and `tech-stack.md`. Each step should be small, specific, testable, and focus on building the core functionality first.
+Use an LLM (like Gemini 2.5 Pro) to create a detailed, step-by-step implementation plan. Provide the LLM with both your `01-product-design-document.md` and `02-tech-stack.md`. Each step should be small, specific, testable, and focus on building the core functionality first.
 
 **Example Prompt for LLM:**
-"Based on the attached Product Requirements Document (`product-requirements-document.md`) and Tech Stack (`tech-stack.md`) for my project '{project_name}', please generate a detailed, step-by-step implementation plan. Break down the core functionality into small, manageable steps. For each step, describe the task and suggest a simple test to verify its completion. Focus on the Minimum Viable Product (MVP) first."
+"Based on the attached Product Requirements Document (`01-product-design-document.md`) and Tech Stack (`02-tech-stack.md`) for my project '{project_name}', please generate a detailed, step-by-step implementation plan. Break down the core functionality into small, manageable steps. For each step, describe the task and suggest a simple test to verify its completion. Focus on the Minimum Viable Product (MVP) first."
 
 *(Attach or paste the content of both `.md` files when prompting. Delete these instructions once the plan is generated)*
 ---
 """
 
+# Template for 04-progress.md
 PROGRESS_TEMPLATE = """# Project Progress Tracker
 
 **Project:** {project_name}
@@ -65,7 +86,7 @@ PROGRESS_TEMPLATE = """# Project Progress Tracker
 ---
 **Instructions for Use:**
 
-As you complete steps from the `implementation-plan.md` using your AI coding assistant (e.g., Claude in Cursor), document the completed step, the date, and any relevant details (like the commit hash) here. This helps track progress and provides context for future work.
+As you complete steps from the `03-implementation-plan.md` using your AI coding assistant (e.g., Claude in Cursor), document the completed step, the date, and any relevant details (like the commit hash) here. This helps track progress and provides context for future work.
 
 **Format:**
 *   **[YYYY-MM-DD] - Step X: [Description of Step Completed]** - (Commit: `[hash]`, Notes: [Optional notes])
@@ -77,6 +98,7 @@ As you complete steps from the `implementation-plan.md` using your AI coding ass
 
 """
 
+# Template for 05-architecture.md
 ARCHITECTURE_TEMPLATE = """# System Architecture Overview
 
 **Project:** {project_name}
@@ -102,13 +124,13 @@ As your AI coding assistant (e.g., Claude in Cursor) creates files, components, 
 
 """
 
-# Update template constants for Cursor rules
+# Templates for Cursor rule files (MDC format)
 CURSOR_RULES_ARCHITECTURE = """---
 description: Enforce reading architecture documentation
 type: Always
 ---
 
-Always read memory-bank/architecture.md before writing any code. Include entire database schema if applicable.
+Always read memory-bank/05-architecture.md before writing any code. Include entire database schema if applicable.
 """
 
 CURSOR_RULES_REQUIREMENTS = """---
@@ -116,7 +138,7 @@ description: Enforce reading requirements documentation
 type: Always
 ---
 
-Always read memory-bank/product-requirements-document.md before writing any code.
+Always read memory-bank/01-product-design-document.md before writing any code.
 """
 
 CURSOR_RULES_UPDATE_ARCHITECTURE = """---
@@ -124,7 +146,7 @@ description: Remember to update architecture documentation
 type: Default
 ---
 
-After adding a major feature or completing a milestone, update memory-bank/architecture.md.
+After adding a major feature or completing a milestone, update memory-bank/05-architecture.md.
 """
 
 CURSOR_RULES_UPDATE_PROGRESS = """---
@@ -132,7 +154,7 @@ description: Remember to update progress tracker
 type: Default
 ---
 
-After completing a milestone or implementation step, update memory-bank/progress.md with details about what was accomplished.
+After completing a milestone or implementation step, update memory-bank/04-progress.md with details about what was accomplished.
 """
 
 CURSOR_RULES_VALIDATION_WORKFLOW = """---
@@ -145,8 +167,8 @@ For each implementation step from the implementation plan:
 1. Complete the implementation for the current step only
 2. Ask the user to validate and confirm before proceeding to the next step
 3. Once validated:
-   - Update memory-bank/progress.md with details about the completed step
-   - Update memory-bank/architecture.md if the step involved new components or structures
+   - Update memory-bank/04-progress.md with details about the completed step
+   - Update memory-bank/05-architecture.md if the step involved new components or structures
    - Commit changes to git with a descriptive message
 4. Only after validation, proceed to the next implementation step
 """
@@ -174,6 +196,7 @@ Examples:
 Use the `/Generate Cursor Rules` command in Cursor to generate more rules based on your memory bank files.
 """
 
+# Post-execution instructions with CLI-friendly formatting
 POST_EXECUTION_INSTRUCTIONS = """✅ Project '{project_name}' structure created successfully!
 
 Next Steps:
@@ -189,9 +212,9 @@ Next Steps:
 2. GENERATE MEMORY BANK CONTENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    • Open `memory-bank/product-requirements-document.md` and follow the instructions
-    • Open `memory-bank/tech-stack.md` and follow the instructions
-    • Open `memory-bank/implementation-plan.md` and follow the instructions
+    • Open `memory-bank/01-product-design-document.md` and follow the instructions
+    • Open `memory-bank/02-tech-stack.md` and follow the instructions
+    • Open `memory-bank/03-implementation-plan.md` and follow the instructions
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 3. REVIEW AND REFINE CURSOR RULES
@@ -210,22 +233,32 @@ Next Steps:
     
     • Initial prompt (copy & paste this):
       
-      Read all the documents in /memory-bank, and proceed with Step 1 of the implementation plan. I will run the tests. Do not start Step 2 until I validate the tests. Once I validate them, open progress.md and document what you did for future developers. Then add any architectural insights to architecture.md to explain what each file does.
+      Read all the documents in /memory-bank, and proceed with Step 1 of the implementation plan. I will run the tests. Do not start Step 2 until I validate the tests. Once I validate them, open 04-progress.md and document what you did for future developers. Then add any architectural insights to 05-architecture.md to explain what each file does.
     
     • After validating Step 1 and committing your changes, continue with (copy & paste):
       
-      Now go through all files in the memory-bank, read progress.md to understand prior work, and proceed with Step 2. Do not start Step 3 until I validate the test.
+      Now go through all files in the memory-bank, read 04-progress.md to understand prior work, and proceed with Step 2. Do not start Step 3 until I validate the test.
     
-    • Repeat this process for each step until the entire implementation-plan.md is complete
+    • Repeat this process for each step until the entire 03-implementation-plan.md is complete
 
 
 Happy Vibe Coding!
 """
 
+# ===================================================================================
+# Utility Functions
+# ===================================================================================
+
 def sanitize_project_name(name):
     """
     Sanitize project name by replacing spaces with hyphens and removing special characters.
     This helps avoid issues with file paths and terminal commands.
+    
+    Args:
+        name (str): Original project name
+        
+    Returns:
+        str: Sanitized project name safe for filesystem use
     """
     # Replace spaces with hyphens
     sanitized = name.replace(" ", "-")
@@ -236,8 +269,17 @@ def sanitize_project_name(name):
     
     return sanitized
 
+# ===================================================================================
+# User Input Functions
+# ===================================================================================
+
 def get_project_name():
-    """Prompt the user for a project name and validate it."""
+    """
+    Prompt the user for a project name and validate it.
+    
+    Returns:
+        tuple: (original_name, sanitized_name)
+    """
     while True:
         project_name = input("Enter project name: ").strip()
         if not project_name:
@@ -252,11 +294,31 @@ def get_project_name():
         return project_name, sanitized_name
 
 def get_project_description():
-    """Prompt the user for a project description."""
+    """
+    Prompt the user for a project description.
+    
+    Returns:
+        str: Project description
+    """
     return input("Enter a brief project description: ").strip()
 
+# ===================================================================================
+# File and Directory Creation Functions
+# ===================================================================================
+
 def create_project_directory(sanitized_project_name):
-    """Create the root project directory. Exit if it already exists."""
+    """
+    Create the root project directory. Exit if it already exists.
+    
+    Args:
+        sanitized_project_name (str): Sanitized name for the project directory
+        
+    Returns:
+        Path: Path object for the created directory
+        
+    Exits:
+        If directory already exists or there's an error in creation
+    """
     project_path = Path.cwd() / sanitized_project_name
     
     if project_path.exists():
@@ -272,7 +334,18 @@ def create_project_directory(sanitized_project_name):
         sys.exit(1)
 
 def create_subdirectories(project_path):
-    """Create required subdirectories within the project directory."""
+    """
+    Create required subdirectories within the project directory.
+    
+    Args:
+        project_path (Path): Path to the project root directory
+        
+    Returns:
+        tuple: (memory_bank_path, cursor_path)
+        
+    Exits:
+        If there's an error in creating subdirectories
+    """
     memory_bank_path = project_path / "memory-bank"
     cursor_path = project_path / ".cursor"
     
@@ -289,19 +362,24 @@ def create_subdirectories(project_path):
 def create_memory_bank_files(memory_bank_path, original_project_name, project_description):
     """
     Create and populate the required files in the memory-bank directory.
+    Files are created with numeric prefixes to indicate reading order.
     
     Args:
-        memory_bank_path: Path object for the memory-bank directory
-        original_project_name: Original human-readable project name for file content
-        project_description: Description of the project
+        memory_bank_path (Path): Path object for the memory-bank directory
+        original_project_name (str): Original human-readable project name for file content
+        project_description (str): Description of the project
+        
+    Returns:
+        list: List of Path objects for the created files
     """
-    # Define the files to create and their content templates
+    # Define the files to create and their content templates, with order prefixes
+    # The order is defined by the position in this ordered dictionary
     files_to_create = {
-        "product-requirements-document.md": PRODUCT_REQUIREMENTS_TEMPLATE,
-        "tech-stack.md": TECH_STACK_TEMPLATE,
-        "implementation-plan.md": IMPLEMENTATION_PLAN_TEMPLATE,
-        "progress.md": PROGRESS_TEMPLATE,
-        "architecture.md": ARCHITECTURE_TEMPLATE
+        "01-product-design-document.md": PRODUCT_REQUIREMENTS_TEMPLATE,
+        "02-tech-stack.md": TECH_STACK_TEMPLATE,
+        "03-implementation-plan.md": IMPLEMENTATION_PLAN_TEMPLATE,
+        "04-progress.md": PROGRESS_TEMPLATE,
+        "05-architecture.md": ARCHITECTURE_TEMPLATE
     }
     
     created_files = []
@@ -333,7 +411,10 @@ def create_cursor_rules_files(cursor_path):
     Create and populate the .cursor/rules directory with MDC rule files.
     
     Args:
-        cursor_path: Path object for the .cursor directory
+        cursor_path (Path): Path object for the .cursor directory
+        
+    Returns:
+        list: List of Path objects for the created files
     """
     # Create rules directory if it doesn't exist
     rules_dir = cursor_path / "rules"
@@ -374,8 +455,8 @@ def print_post_execution_instructions(original_project_name, sanitized_project_n
     Format and print post-execution instructions to the user.
     
     Args:
-        original_project_name: Original human-readable name of the project
-        sanitized_project_name: Sanitized name of the project used for directory
+        original_project_name (str): Original human-readable name of the project
+        sanitized_project_name (str): Sanitized name of the project used for directory
     """
     # Format the instructions with the project name and directory name
     instructions = POST_EXECUTION_INSTRUCTIONS.format(
@@ -388,23 +469,34 @@ def print_post_execution_instructions(original_project_name, sanitized_project_n
     print(instructions)
     print("-" * 80 + "\n")
 
-if __name__ == "__main__":
+# ===================================================================================
+# Main Execution
+# ===================================================================================
+
+def main():
+    """Main function that orchestrates the project setup process."""
     print("Vibe Coding Project Setup Script")
+    
+    # Get user input
     original_project_name, sanitized_project_name = get_project_name()
     project_description = get_project_description()
+    
+    # Create directory structure
     project_path = create_project_directory(sanitized_project_name)
     memory_bank_path, cursor_path = create_subdirectories(project_path)
     
-    # Create memory-bank files with the original project name for content
+    # Create content files
     memory_bank_files = create_memory_bank_files(memory_bank_path, original_project_name, project_description)
-    
-    # Create .cursor/rules files
     cursor_rules_files = create_cursor_rules_files(cursor_path)
     
+    # Print summary
     print(f"Project name: {original_project_name}")
     print(f"Sanitized directory name: {sanitized_project_name}")
     print(f"Project description: {project_description}")
     print(f"Project directory: {project_path}")
     
     # Print post-execution instructions
-    print_post_execution_instructions(original_project_name, sanitized_project_name) 
+    print_post_execution_instructions(original_project_name, sanitized_project_name)
+
+if __name__ == "__main__":
+    main() 

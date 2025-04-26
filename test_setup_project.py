@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+Unit tests for the Vibe Coding Project Setup Script
+
+This module contains tests for all major functionality in setup_project.py,
+including input validation, directory creation, file generation, and output formatting.
+"""
 
 import unittest
 import subprocess
@@ -18,10 +24,14 @@ from setup_project import (
     print_post_execution_instructions,
     CURSOR_RULES_ARCHITECTURE,
     CURSOR_RULES_REQUIREMENTS,
-    POST_EXECUTION_INSTRUCTIONS
+    POST_EXECUTION_INSTRUCTIONS,
+    main
 )
 
 class TestSetupProject(unittest.TestCase):
+    """
+    Test cases for the Vibe Coding Project Setup Script functionality
+    """
     
     def setUp(self):
         # Create a temporary test directory
@@ -147,11 +157,11 @@ class TestSetupProject(unittest.TestCase):
             
             # Check that all expected files exist
             expected_files = [
-                "product-requirements-document.md",
-                "tech-stack.md",
-                "implementation-plan.md",
-                "progress.md",
-                "architecture.md"
+                "01-product-design-document.md",
+                "02-tech-stack.md",
+                "03-implementation-plan.md", 
+                "04-progress.md",
+                "05-architecture.md"
             ]
             
             for filename in expected_files:
@@ -167,8 +177,8 @@ class TestSetupProject(unittest.TestCase):
                     if sanitized_test_name != test_original_name:
                         self.assertNotIn(sanitized_test_name, content)
                     
-                    # For PRD, also check for project description
-                    if filename == "product-requirements-document.md":
+                    # For Product Design Document, also check for project description
+                    if filename == "01-product-design-document.md":
                         self.assertIn(test_project_description, content)
 
     def test_create_cursor_rules_files(self):
@@ -236,6 +246,41 @@ class TestSetupProject(unittest.TestCase):
             self.assertIn("REVIEW AND REFINE CURSOR RULES", output)
             self.assertIn("START CODING WITH CLAUDE", output)
             self.assertIn("Happy Vibe Coding", output)
+            
+    def test_main_function(self):
+        """Test that the main function properly orchestrates all steps of the setup process."""
+        # This is a high-level integration test that would normally run all parts of the script
+        # Since it requires input, we'll mock all components to verify they're called correctly
+        
+        with unittest.mock.patch('setup_project.get_project_name', return_value=("Test Project", "Test-Project")):
+            with unittest.mock.patch('setup_project.get_project_description', return_value="Test description"):
+                with unittest.mock.patch('setup_project.create_project_directory') as mock_create_dir:
+                    with unittest.mock.patch('setup_project.create_subdirectories') as mock_create_subdirs:
+                        with unittest.mock.patch('setup_project.create_memory_bank_files') as mock_create_mb_files:
+                            with unittest.mock.patch('setup_project.create_cursor_rules_files') as mock_create_rules:
+                                with unittest.mock.patch('setup_project.print_post_execution_instructions') as mock_print:
+                                    with unittest.mock.patch('sys.stdout', new=io.StringIO()):
+                                        
+                                        # Mock paths for subdirectories
+                                        project_path_mock = unittest.mock.MagicMock()
+                                        memory_bank_path_mock = unittest.mock.MagicMock()
+                                        cursor_path_mock = unittest.mock.MagicMock()
+                                        
+                                        # Set up return values for mocked functions
+                                        mock_create_dir.return_value = project_path_mock
+                                        mock_create_subdirs.return_value = (memory_bank_path_mock, cursor_path_mock)
+                                        
+                                        # Run the main function
+                                        main()
+                                        
+                                        # Verify that all expected functions were called with correct args
+                                        mock_create_dir.assert_called_once_with("Test-Project")
+                                        mock_create_subdirs.assert_called_once_with(project_path_mock)
+                                        mock_create_mb_files.assert_called_once_with(
+                                            memory_bank_path_mock, "Test Project", "Test description"
+                                        )
+                                        mock_create_rules.assert_called_once_with(cursor_path_mock)
+                                        mock_print.assert_called_once_with("Test Project", "Test-Project")
 
 if __name__ == "__main__":
     unittest.main() 
