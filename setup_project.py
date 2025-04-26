@@ -180,9 +180,7 @@ def get_project_name():
             
         sanitized_name = sanitize_project_name(project_name)
         if sanitized_name != project_name:
-            confirm = input(f"Project name will be sanitized to '{sanitized_name}'. Proceed? (y/n): ").strip().lower()
-            if confirm != 'y':
-                continue
+            print(f"Project name sanitized to '{sanitized_name}' for compatibility.")
         
         return sanitized_name
 

@@ -16,7 +16,7 @@
 
 * **[2024-07-29] - Step 6: Define Boilerplate Content Templates** - Defined string constants for all required template files including product-requirements-document.md, tech-stack.md, implementation-plan.md, progress.md, architecture.md, and .cursor/rules. Used Python-style placeholders for project_name and project_description. Created and ran tests to verify template formatting.
 
-* **[2024-07-29] - Improvement: Project Name Sanitization** - Added functionality to sanitize project names by converting spaces to hyphens and removing special characters. This ensures project directories are terminal and filesystem friendly. Added user confirmation for sanitized names and comprehensive tests.
+* **[2024-07-29] - Improvement: Project Name Sanitization** - Added functionality to sanitize project names by converting spaces to hyphens and removing special characters. This ensures project directories are terminal and filesystem friendly. The user is notified when sanitization occurs.
 
 ## Next Steps
 

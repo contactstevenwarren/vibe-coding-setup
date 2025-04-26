@@ -12,7 +12,7 @@
 
 * `sanitize_project_name(name)`: Sanitizes the project name by replacing spaces with hyphens and removing special characters. This ensures that project directory names are terminal and filesystem friendly.
 
-* `get_project_name()`: Prompts the user for a project name, sanitizes it, and asks for confirmation if sanitization changes the name. It will continue prompting until a valid name is provided.
+* `get_project_name()`: Prompts the user for a project name, sanitizes it, and informs the user if sanitization occurs. It will continue prompting until a valid name is provided.
 
 * `get_project_description()`: Prompts the user for a brief project description and returns it.
 

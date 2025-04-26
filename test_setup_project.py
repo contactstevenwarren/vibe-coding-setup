@@ -51,23 +51,20 @@ class TestSetupProject(unittest.TestCase):
     
     def test_get_project_name_sanitized(self):
         """Test that get_project_name returns sanitized input."""
-        # Mock user entering a name with spaces and confirming sanitization
-        with unittest.mock.patch('builtins.input', side_effect=["test project", "y"]):
-            project_name = get_project_name()
-            self.assertEqual(project_name, "test-project")
-    
-    def test_get_project_name_reject_sanitization(self):
-        """Test that get_project_name allows rejecting sanitization."""
-        # Mock user entering a name with spaces, rejecting sanitization, then entering valid name
-        with unittest.mock.patch('builtins.input', side_effect=["test project", "n", "test-project"]):
-            project_name = get_project_name()
-            self.assertEqual(project_name, "test-project")
+        # Mock user entering a name with spaces
+        with unittest.mock.patch('builtins.input', return_value="test project"):
+            with unittest.mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
+                project_name = get_project_name()
+                self.assertEqual(project_name, "test-project")
+                self.assertIn("Project name sanitized to", fake_stdout.getvalue())
     
     def test_get_project_name_already_sanitized(self):
         """Test that get_project_name accepts already sanitized input."""
         with unittest.mock.patch('builtins.input', return_value="test-project"):
-            project_name = get_project_name()
-            self.assertEqual(project_name, "test-project")
+            with unittest.mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
+                project_name = get_project_name()
+                self.assertEqual(project_name, "test-project")
+                self.assertNotIn("Project name sanitized to", fake_stdout.getvalue())
     
     def test_get_project_name_empty_then_valid(self):
         """Test that get_project_name rejects empty input then accepts valid input."""
