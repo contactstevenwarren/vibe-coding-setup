@@ -24,7 +24,7 @@ Vibe Coding is a methodology for working effectively with Large Language Models 
 
 ```bash
 # Add the tap repository
-brew tap contactstevenwarren/vibe-coding-setup https://github.com/contactstevenwarren/vibe-coding-setup.git
+brew tap contactstevenwarren/vibe-coding-setup
 
 # Install the script
 brew install vibe-coding-setup
