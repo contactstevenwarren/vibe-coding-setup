@@ -1,6 +1,6 @@
 # Vibe Coding Setup
 
-This project is inspired by the Ultimate Guide to Vibe Coding by Nicolas Zullo. The Vibe Coding Project Setup Script automates the creation of a standardized project structure, designed to facilitate development with LLMs (Large Language Models) like Claude in the Cursor IDE. It creates the necessary directory structure, documentation templates, and IDE configuration files for a Vibe Coding project.
+This project is inspired by the [Ultimate Guide to Vibe Coding by Nicolas Zullo](https://github.com/EnzeD/vibe-coding). The Vibe Coding Project Setup Script automates the creation of a standardized project structure, designed to facilitate development with LLMs (Large Language Models) like Claude in the Cursor IDE. It creates the necessary directory structure, documentation templates, and IDE configuration files for a Vibe Coding project.
 
 ## What is Vibe Coding?
 
