@@ -7,7 +7,6 @@ from setup_project import (
     IMPLEMENTATION_PLAN_TEMPLATE,
     PROGRESS_TEMPLATE,
     ARCHITECTURE_TEMPLATE,
-    CURSOR_RULES_TEMPLATE,
     POST_EXECUTION_INSTRUCTIONS
 )
 
@@ -37,7 +36,6 @@ class TestBoilerplateTemplates(unittest.TestCase):
         self.assertIn("Implementation Plan", IMPLEMENTATION_PLAN_TEMPLATE)
         self.assertIn("Project Progress Tracker", PROGRESS_TEMPLATE)
         self.assertIn("System Architecture Overview", ARCHITECTURE_TEMPLATE)
-        self.assertIn("Cursor Rules - Boilerplate", CURSOR_RULES_TEMPLATE)
         self.assertIn("Project '{project_name}' structure created successfully!", POST_EXECUTION_INSTRUCTIONS)
     
     def test_template_formatting(self):
@@ -45,18 +43,27 @@ class TestBoilerplateTemplates(unittest.TestCase):
         test_project = "test-project"
         test_description = "This is a test project"
         
-        # Test formatting with project_name
+        # Test formatting with project_name for templates that don't need directory_name
         for template in [
             PRODUCT_REQUIREMENTS_TEMPLATE,
             TECH_STACK_TEMPLATE,
             IMPLEMENTATION_PLAN_TEMPLATE,
             PROGRESS_TEMPLATE,
             ARCHITECTURE_TEMPLATE,
-            POST_EXECUTION_INSTRUCTIONS
         ]:
             formatted = template.format(project_name=test_project, project_description=test_description)
             self.assertIn(test_project, formatted)
             self.assertNotIn("{project_name}", formatted)
+        
+        # Test POST_EXECUTION_INSTRUCTIONS which needs directory_name
+        formatted_post = POST_EXECUTION_INSTRUCTIONS.format(
+            project_name=test_project, 
+            project_description=test_description,
+            directory_name=test_project
+        )
+        self.assertIn(test_project, formatted_post)
+        self.assertNotIn("{project_name}", formatted_post)
+        self.assertNotIn("{directory_name}", formatted_post)
         
         # Test formatting with project_description
         formatted_prd = PRODUCT_REQUIREMENTS_TEMPLATE.format(

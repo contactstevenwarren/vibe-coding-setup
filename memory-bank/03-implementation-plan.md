@@ -1,4 +1,4 @@
-Okay, here is a detailed, step-by-step implementation plan for the "Vibe Coding Project Setup Script" based on the provided `DESIGN-DOCUMENT.md` and `TECH-STACK.md`.
+Okay, here is a detailed, step-by-step implementation plan for the "Vibe Coding Project Setup Script" based on the provided `01-product-design-document.md` and `02-tech-stack.md`.
 
 **Project:** Vibe Coding Project Setup Script
 **Tech Stack:** Python 3 (Standard Library Only)
@@ -36,20 +36,20 @@ Okay, here is a detailed, step-by-step implementation plan for the "Vibe Coding 
 **Phase 3: Boilerplate Content Generation**
 
 6.  **Step 6: Define Boilerplate Content Templates**
-    *   **Task:** Store the multi-line boilerplate content for each target file (`product-requirements-document.md`, `tech-stack.md`, `implementation-plan.md`, `progress.md`, `architecture.md`, `.cursor/rules`) as string constants (e.g., using triple quotes `"""..."""`) within the Python script. Use Python-style placeholders like `{project_name}` and `{project_description}` within these strings for easy formatting (e.g., using f-strings or `.format()`), even if the source `DESIGN-DOCUMENT.md` uses `<...>` for illustration.
+    *   **Task:** Store the multi-line boilerplate content for each target file (`01-product-design-document.md`, `02-tech-stack.md`, `03-implementation-plan.md`, `04-progress.md`, `05-architecture.md`, `.cursor/rules`) as string constants (e.g., using triple quotes `"""..."""`) within the Python script. Use Python-style placeholders like `{project_name}` and `{project_description}` within these strings for easy formatting (e.g., using f-strings or `.format()`), even if the source `01-product-design-document.md` uses `<...>` for illustration.
     *   **Test:** Internal step. Correctness will be verified in the next steps when files are written.
 
 7.  **Step 7: Create and Populate `memory-bank` Files**
     *   **Task:** For each of the five `.md` files destined for the `memory-bank` directory:
-        *   Construct the full `pathlib.Path` object for the file (e.g., `root_path / "memory-bank" / "product-requirements-document.md"`).
+        *   Construct the full `pathlib.Path` object for the file (e.g., `root_path / "memory-bank" / "01-product-design-document.md"`).
         *   Use f-strings or the `.format()` method on the corresponding boilerplate string template to insert the captured `project_name` and `project_description` variables.
         *   Open the file path in write mode (`'w'`, encoding='utf-8') using a `with` statement.
         *   Write the formatted content to the file.
     *   **Test:** Run the script. Navigate into the created `project-name/memory-bank/` directory. Open each `.md` file and verify:
         *   The file exists.
-        *   The content matches the boilerplate from `DESIGN-DOCUMENT.md`.
+        *   The content matches the boilerplate from `01-product-design-document.md`.
         *   `<Project Name>` has been replaced with the actual project name entered.
-        *   `<User-provided description>` has been replaced with the actual description entered (in `product-requirements-document.md`).
+        *   `<User-provided description>` has been replaced with the actual description entered (in `01-product-design-document.md`).
 
 8.  **Step 8: Create and Populate `.cursor/rules` File**
     *   **Task:**
@@ -57,12 +57,12 @@ Okay, here is a detailed, step-by-step implementation plan for the "Vibe Coding 
         *   Get the corresponding boilerplate string template (which doesn't need formatting).
         *   Open the file path in write mode (`'w'`, encoding='utf-8') using a `with` statement.
         *   Write the content to the file.
-    *   **Test:** Run the script. Navigate into the created `project-name/.cursor/` directory. Open the `rules` file and verify its content matches the boilerplate YAML from `DESIGN-DOCUMENT.md`.
+    *   **Test:** Run the script. Navigate into the created `project-name/.cursor/` directory. Open the `rules` file and verify its content matches the boilerplate YAML from `01-product-design-document.md`.
 
 **Phase 4: Final Output and Refinement**
 
 9.  **Step 9: Print Post-Execution Instructions**
-    *   **Task:** Define the multi-line post-execution instructions string (from `DESIGN-DOCUMENT.md`) within the script. Use f-strings or `.format()` to insert the actual `project_name` into the instructions where `<Project Name>` appears. Use `print()` to display these formatted instructions to the console after all files/directories have been created successfully.
+    *   **Task:** Define the multi-line post-execution instructions string (from `01-product-design-document.md`) within the script. Use f-strings or `.format()` to insert the actual `project_name` into the instructions where `<Project Name>` appears. Use `print()` to display these formatted instructions to the console after all files/directories have been created successfully.
     *   **Test:** Run the script successfully. Verify the complete set of "Next Steps" instructions is printed to the console, and `<Project Name>` placeholders have been correctly substituted.
 
 10. **Step 10: Code Cleanup and Comments**
@@ -71,4 +71,4 @@ Okay, here is a detailed, step-by-step implementation plan for the "Vibe Coding 
 
 ---
 
-This plan breaks down the script creation into manageable, testable steps, focusing on delivering the core MVP functionality first.
+This plan breaks down the script creation into manageable, testable steps, focusing on delivering the core MVP functionality first. 

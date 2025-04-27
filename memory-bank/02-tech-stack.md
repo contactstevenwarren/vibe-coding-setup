@@ -1,6 +1,6 @@
 # Tech Stack Recommendation for Project Setup Script
 
-**Project:** Vibe Coding Project Setup Script (as described in `DESIGN-DOCUMENT.md`)
+**Project:** Vibe Coding Project Setup Script (as described in `01-product-design-document.md`)
 
 ---
 
@@ -18,4 +18,4 @@
 
 ---
 
-**Note:** This tech stack is for the *setup script itself*. The tech stack for the actual application you intend to build *using* this script will be determined later and documented in the `memory-bank/tech-stack.md` file created by the script, based on that application's specific `product-requirements-document.md`.
+**Note:** This tech stack is for the *setup script itself*. The tech stack for the actual application you intend to build *using* this script will be determined later and documented in the `memory-bank/02-tech-stack.md` file created by the script, based on that application's specific `01-product-design-document.md`. 

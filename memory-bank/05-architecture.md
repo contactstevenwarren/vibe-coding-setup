@@ -4,7 +4,7 @@
 
 ## File/Component Index
 
-* **script.py** - Main Python script file responsible for creating project structure
+* **vibe-coding-setup** - Main Python script file responsible for creating project structure (renamed from script.py)
 * **memory-bank/** - Directory for project documentation templates
   * **product-requirements-document.md** - Template for product requirements
   * **tech-stack.md** - Template for technology stack documentation
@@ -16,6 +16,9 @@
   * **02-memory-bank-access.mdc** - Rules for memory bank access
   * **03-implementation-guidelines.mdc** - Implementation guidelines
   * **04-documentation.mdc** - Documentation rules
+* **Formula/vibe-coding-setup.rb** - Homebrew formula for installation via Homebrew
+* **LICENSE.md** - MIT license file
+* **vibe-coding-README.md** - README file for the GitHub repository
 
 ## Functions
 
@@ -27,7 +30,7 @@
 * `create_memory_bank_files(root_dir, project_name, project_description)` - Creates and populates memory-bank files
 * `create_cursor_rules(root_dir)` - Creates and populates Cursor rules files
 * `print_post_execution_instructions(root_dir, project_name)` - Displays formatted instructions
-* `main()` - Main execution function
+* `main()` - Main execution function with argument parsing
 * `handle_error(e, message)` - Handles exceptions with user-friendly error messages
 
 ## Project Structure
@@ -50,11 +53,12 @@ project-name/
 
 ## Data Flow
 
-1. User input collection (project name, description)
-2. Sanitization of project name
-3. Directory structure creation
-4. File creation with templated content
-5. Post-execution instructions output
+1. Command-line argument parsing (--version flag)
+2. User input collection (project name, description)
+3. Sanitization of project name
+4. Directory structure creation
+5. File creation with templated content
+6. Post-execution instructions output
 
 ## Error Handling Strategy
 
@@ -95,18 +99,43 @@ The script implements comprehensive error handling to ensure robustness:
    * Consistent error handling pattern throughout codebase
    * Comprehensive docstrings for all functions
 
+6. **Installation Options**
+   * Homebrew formula for easy installation on macOS and Linux
+   * Command-line options with argument parsing
+   * Version information accessible via --version flag
+   * Executable script with shebang line for direct execution
+
 ## Execution Flow
 
 1. Script execution begins
-2. User prompted for project name (with validation)
-3. User prompted for project description
-4. Project name sanitized if necessary
-5. Root directory created
-6. Subdirectories created
-7. Memory-bank files created and populated
-8. Cursor rules files created and populated
-9. Post-execution instructions displayed
-10. Script terminates successfully
+2. Command-line arguments processed
+3. If --version flag is provided, version is displayed and script exits
+4. User prompted for project name (with validation)
+5. User prompted for project description
+6. Project name sanitized if necessary
+7. Root directory created
+8. Subdirectories created
+9. Memory-bank files created and populated
+10. Cursor rules files created and populated
+11. Post-execution instructions displayed
+12. Script terminates successfully
+
+## Distribution Strategy
+
+1. **GitHub Repository**
+   * Main code repository with README and LICENSE
+   * Tagged releases for version control
+   * Distributed under MIT license
+
+2. **Homebrew Tap**
+   * Custom Homebrew tap for easy installation
+   * Formula defines dependencies and installation instructions
+   * Automated testing ensures script works when installed
+
+3. **Version Management**
+   * Semantic versioning (MAJOR.MINOR.PATCH)
+   * Version information stored in script
+   * Version flag provides easy access to version information
 
 ## Future Enhancement Considerations
 

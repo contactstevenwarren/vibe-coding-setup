@@ -10,13 +10,15 @@ The script creates:
 - A root project directory (with sanitized name for filesystem compatibility)
 - memory-bank/ directory with template markdown files
 - .cursor/rules/ directory with MDC-formatted rule files
-
-Based on the implementation plan in /memory-bank/IMPLEMENTATION-PLAN.md
 """
 
 from pathlib import Path
 import sys
 import re
+import argparse
+
+# Version information
+VERSION = "1.0.0"
 
 # ===================================================================================
 # Template Constants
@@ -198,93 +200,71 @@ Next Steps:
 2. GENERATE MEMORY BANK CONTENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    • Open `memory-bank/01-product-design-document.md` and follow the instructions
-    • Open `memory-bank/02-tech-stack.md` and follow the instructions
-    • Open `memory-bank/03-implementation-plan.md` and follow the instructions
+    For each file in memory-bank/, follow the instructions inside to generate content.
+    Start with 01-product-design-document.md, then 02-tech-stack.md, then 03-implementation-plan.md.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 3. REVIEW AND REFINE CURSOR RULES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    • The `.cursor/rules` directory contains MDC rule files based on Vibe Coding guide
-    • Review these rules in the Cursor editor 
-    • Add rules specific to your chosen tech stack
-    • Use `/Generate Cursor Rules` command for additional rules
+    Review the .cursor/rules/ directory. Adjust and add rules based on your project needs.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 4. START CODING WITH CLAUDE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    • First, select Claude Sonnet 3.7 Thinking in Cursor
-    
-    • Initial prompt (copy & paste this):
-      
-      Read all the documents in /memory-bank, and proceed with Step 1 of the implementation plan. I will run the tests. Do not start Step 2 until I validate the tests. Once I validate them, open 04-progress.md and document what you did for future developers. Then add any architectural insights to 05-architecture.md to explain what each file does.
-    
-    • After validating Step 1 and committing your changes, continue with (copy & paste):
-      
-      Now go through all files in the memory-bank, read 04-progress.md to understand prior work, and proceed with Step 2. Do not start Step 3 until I validate the test.
-    
-    • Repeat this process for each step until the entire 03-implementation-plan.md is complete
-
+    Use Claude Sonnet 3.7 in Cursor to implement the plan.
+    Follow the validation workflow for each step before proceeding to the next.
 
 Happy Vibe Coding!
 """
 
 # ===================================================================================
-# Utility Functions
+# Helper Functions
 # ===================================================================================
 
 def sanitize_project_name(name):
     """
-    Sanitize project name by replacing spaces with hyphens and removing special characters.
-    This helps avoid issues with file paths and terminal commands.
+    Convert project name to a filesystem-friendly format.
     
     Args:
         name (str): Original project name
         
     Returns:
-        str: Sanitized project name safe for filesystem use
+        str: Sanitized name (spaces converted to hyphens, special chars removed)
     """
-    # Replace spaces with hyphens
-    sanitized = name.replace(" ", "-")
-    # Remove any characters that aren't alphanumeric, hyphens, or underscores
-    sanitized = re.sub(r'[^a-zA-Z0-9_\-]', '', sanitized)
-    # Ensure the name doesn't start or end with a hyphen
-    sanitized = sanitized.strip('-')
-    
-    return sanitized
-
-# ===================================================================================
-# User Input Functions
-# ===================================================================================
+    # Replace spaces with hyphens and remove any special characters
+    sanitized = re.sub(r'[^\w\-]', '', name.replace(' ', '-'))
+    return sanitized.lower()
 
 def get_project_name():
     """
-    Prompt the user for a project name and validate it.
+    Prompt user for project name and validate the input.
     
     Returns:
-        tuple: (original_name, sanitized_name)
+        tuple: (original_project_name, sanitized_project_name)
     """
     while True:
         project_name = input("Enter project name: ").strip()
-        if not project_name:
-            print("Error: Project name cannot be empty. Please try again.")
-            continue
-            
-        sanitized_name = sanitize_project_name(project_name)
-        if sanitized_name != project_name:
-            print(f"Project name sanitized to '{sanitized_name}' for directory and file paths.")
         
-        # Return both the original and sanitized names
+        if not project_name:
+            print("Error: Project name cannot be empty.")
+            continue
+        
+        sanitized_name = sanitize_project_name(project_name)
+        
+        # If name was modified during sanitization, inform the user
+        if sanitized_name != project_name:
+            print(f"Note: Project name will be sanitized to '{sanitized_name}' for directory creation.")
+            
         return project_name, sanitized_name
 
 def get_project_description():
     """
-    Prompt the user for a project description.
+    Prompt user for project description.
     
     Returns:
-        str: Project description
+        str: Project description entered by the user
     """
     return input("Enter a brief project description: ").strip()
 
@@ -461,6 +441,16 @@ def print_post_execution_instructions(original_project_name, sanitized_project_n
 
 def main():
     """Main function that orchestrates the project setup process."""
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Vibe Coding Project Setup Script")
+    parser.add_argument("--version", action="store_true", help="Print version information")
+    args = parser.parse_args()
+    
+    # Handle version flag
+    if args.version:
+        print(f"Vibe Coding Setup v{VERSION}")
+        return
+    
     print("Vibe Coding Project Setup Script")
     
     # Get user input
