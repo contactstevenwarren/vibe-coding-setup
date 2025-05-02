@@ -215,39 +215,18 @@ The README should be the single source of truth for new users discovering your p
 Place README.md in the repository root for maximum visibility.
 """
 
-# Post-execution instructions with CLI-friendly formatting
-POST_EXECUTION_INSTRUCTIONS = """✅ Project '{project_name}' structure created successfully!
+# Post-execution instructions (Simplified)
+POST_EXECUTION_INSTRUCTIONS = """✅ Project '{project_name}' structure created successfully at: {directory_name}/
 
 Next Steps:
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. OPEN THE PROJECT FOLDER IN CURSOR
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.  Navigate to the project: `cd {directory_name}`
+2.  Open in Cursor: `cursor .`
+3.  Generate content for `memory-bank/` files (start with 01-...). 
+4.  Review/customize rules in `.cursor/rules/`.
+5.  Follow `03-implementation-plan.md` and coding workflow.
 
-    $ cd {directory_name}
-    $ cursor .
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2. GENERATE MEMORY BANK CONTENT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-    For each file in memory-bank/, follow the instructions inside to generate content.
-    Start with 01-product-design-document.md, then 02-tech-stack.md, then 03-implementation-plan.md.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-3. REVIEW AND REFINE CURSOR RULES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-    Review the .cursor/rules/ directory. Adjust and add rules based on your project needs.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-4. START CODING WITH CLAUDE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-    Use Claude Sonnet 3.7 in Cursor to implement the plan.
-    Follow the validation workflow for each step before proceeding to the next.
-
-Happy Vibe Coding!
+Happy Vibe Coding! 🚀
 """
 
 # ===================================================================================
@@ -628,7 +607,7 @@ def apply_additional_templates(selected_templates, root_dir):
 
 def print_post_execution_instructions(original_project_name, sanitized_project_name):
     """
-    Format and print post-execution instructions to the user.
+    Format and print simplified post-execution instructions to the user.
     
     Args:
         original_project_name (str): Original human-readable name of the project
@@ -640,10 +619,8 @@ def print_post_execution_instructions(original_project_name, sanitized_project_n
         directory_name=sanitized_project_name
     )
     
-    # Print the formatted instructions
-    print("\n" + "-" * 80)
-    print(instructions)
-    print("-" * 80 + "\n")
+    # Print the formatted instructions directly, without extra separators
+    print(f"\n{instructions}")
 
 # ===================================================================================
 # Main Execution
