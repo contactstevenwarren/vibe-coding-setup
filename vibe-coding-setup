@@ -16,12 +16,43 @@ from pathlib import Path
 import sys
 import re
 import argparse
+import os
 
 # Version information
 VERSION = "1.0.0"
 
 # ===================================================================================
-# Template Constants
+# Template Definitions (Optional Additions)
+# ===================================================================================
+
+def get_laravel_supabase_setup_instructions():
+    """Returns the content for the Laravel + Supabase setup instruction file."""
+    # Simplified instruction as requested
+    return """---
+description: Guide for setting up Laravel project
+type: Default
+---
+
+Use docker for installing laravel project.
+"""
+
+# Defines optional additional templates (applied *after* base structure)
+# User selects by number (1-based index corresponding to list index + 1)
+ADDITIONAL_TEMPLATES = [
+    {
+        "id": "laravel-supabase",
+        "name": "Add: Laravel with Supabase Auth Instructions",
+        "directories": [], # No *additional* directories beyond base
+        "files": {
+            # Adds specific setup instructions for Laravel + Supabase
+            ".cursor/rules/laravel-supabase-setup.mdc": get_laravel_supabase_setup_instructions,
+        }
+    },
+    # Add more templates here in the future
+]
+
+# ===================================================================================
+# Template Constants (Base Structure)
 # ===================================================================================
 
 # Template for 01-product-design-document.md (previously product-requirements-document.md)
@@ -268,6 +299,54 @@ def get_project_description():
     """
     return input("Enter a brief project description: ").strip()
 
+def select_additional_templates(available_templates):
+    """Prompts the user to select optional additional templates."""
+    if not available_templates:
+        return [] # No templates to choose from
+
+    print("\nThe following optional templates can add specific instructions to the base setup:")
+    for i, template in enumerate(available_templates):
+        print(f"  {i + 1}. {template.get('name', f'Unnamed Template {i+1}')}")
+
+    while True:
+        prompt = "Select template numbers to apply (comma-separated, e.g., 1), or press Enter to continue with base structure only: "
+        selection = input(prompt).strip()
+
+        if not selection:
+            return [] # User pressed Enter
+
+        selected_indices = set()
+        selected_templates_list = []
+        valid_selection = True
+        parts = [part.strip() for part in selection.split(',') if part.strip()]
+
+        if not parts:
+             print("Error: Empty selection entered. Please enter numbers or press Enter.")
+             continue
+
+        for part in parts:
+            try:
+                index = int(part) - 1 # User enters 1-based, convert to 0-based
+                if 0 <= index < len(available_templates):
+                    if index not in selected_indices:
+                        selected_indices.add(index)
+                        selected_templates_list.append(available_templates[index])
+                    else:
+                        print(f"Warning: Template {part} selected multiple times. Including it once.")
+                else:
+                    print(f"Error: Invalid selection '{part}'. Please enter numbers from 1 to {len(available_templates)}.")
+                    valid_selection = False
+                    break
+            except ValueError:
+                print(f"Error: Invalid input '{part}'. Please enter numbers only.")
+                valid_selection = False
+                break
+
+        if valid_selection:
+            # Sort based on original index to maintain consistency if needed later
+            selected_templates_list.sort(key=lambda t: available_templates.index(t))
+            return selected_templates_list
+
 # ===================================================================================
 # File and Directory Creation Functions
 # ===================================================================================
@@ -416,6 +495,137 @@ def create_cursor_rules_files(cursor_path):
             
     return created_files
 
+def create_base_readme(project_path, project_name, project_description):
+    """Creates a basic README.md file in the project root."""
+    readme_content = f"""# {project_name}
+
+{project_description}
+
+This project was initialized using the Vibe Coding Setup script.
+
+## Getting Started
+
+1.  Open this folder in Cursor.
+2.  Generate content for the files in `memory-bank/` following the instructions within them.
+3.  Start development following the `memory-bank/03-implementation-plan.md`.
+"""
+    readme_path = project_path / "README.md"
+    try:
+        with open(readme_path, 'w', encoding='utf-8') as f:
+            f.write(readme_content)
+        print(f"Created file: {readme_path}")
+    except Exception as e:
+        print(f"Error creating README.md: {e}")
+
+def create_base_gitignore(project_path):
+    """Creates a basic .gitignore file in the project root."""
+    gitignore_content = """# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+venv/
+ENV/
+env/
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+"""
+    gitignore_path = project_path / ".gitignore"
+    try:
+        with open(gitignore_path, 'w', encoding='utf-8') as f:
+            f.write(gitignore_content)
+        print(f"Created file: {gitignore_path}")
+    except Exception as e:
+        print(f"Error creating .gitignore: {e}")
+
+# ===================================================================================
+# Core Generation Logic
+# ===================================================================================
+
+def generate_base_structure(root_dir_name, project_name, project_description):
+    """Creates the entire base project structure and returns the root path."""
+    # Create root directory
+    project_path = create_project_directory(root_dir_name)
+    if not project_path:
+        # Error handled in create_project_directory, which exits
+        return None 
+
+    # Create standard subdirectories
+    memory_bank_path, cursor_path = create_subdirectories(project_path)
+    if not memory_bank_path or not cursor_path:
+        # Error handled in create_subdirectories, which exits
+        return None
+
+    # Create standard files
+    create_memory_bank_files(memory_bank_path, project_name, project_description)
+    create_cursor_rules_files(cursor_path)
+    create_base_readme(project_path, project_name, project_description)
+    create_base_gitignore(project_path)
+    
+    return project_path
+
+def apply_additional_templates(selected_templates, root_dir):
+    """Applies the selected additional templates to the project structure."""
+    if not selected_templates:
+        return
+
+    print("\nApplying selected templates...")
+    for template in selected_templates:
+        template_name = template.get('name', template.get('id', 'Unknown Template'))
+        print(f"  Applying: {template_name}")
+
+        # Create additional directories specified by the template
+        for dir_path_str in template.get("directories", []):
+            full_dir_path = root_dir / dir_path_str
+            try:
+                os.makedirs(full_dir_path, exist_ok=True)
+                print(f"    Ensured directory exists: {full_dir_path}")
+            except Exception as e:
+                print(f"    Error creating directory {full_dir_path}: {e}")
+                # Decide whether to continue or stop if a directory fails
+                continue 
+
+        # Create additional files specified by the template
+        for file_path_str, content_source in template.get("files", {}).items():
+            full_file_path = root_dir / file_path_str
+            try:
+                # Ensure parent directory exists
+                parent_dir = os.path.dirname(full_file_path)
+                if parent_dir:
+                    os.makedirs(parent_dir, exist_ok=True)
+
+                # Get content
+                content = ""
+                if callable(content_source):
+                    content = content_source() # Call the function to get content
+                elif isinstance(content_source, str):
+                    content = content_source # Use the string directly
+                else:
+                    print(f"    Warning: Unsupported content source type for {file_path_str} in template {template_name}")
+                    continue
+
+                # Write file
+                with open(full_file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print(f"    Created file: {full_file_path}")
+
+            except Exception as e:
+                print(f"    Error creating file {full_file_path}: {e}")
+                # Decide whether to continue or stop if a file fails
+                continue
+
+# ===================================================================================
+# Post Execution
+# ===================================================================================
+
 def print_post_execution_instructions(original_project_name, sanitized_project_name):
     """
     Format and print post-execution instructions to the user.
@@ -457,19 +667,32 @@ def main():
     original_project_name, sanitized_project_name = get_project_name()
     project_description = get_project_description()
     
-    # Create directory structure
-    project_path = create_project_directory(sanitized_project_name)
-    memory_bank_path, cursor_path = create_subdirectories(project_path)
+    # Ask user to select optional templates
+    selected_templates = select_additional_templates(ADDITIONAL_TEMPLATES)
     
-    # Create content files
-    memory_bank_files = create_memory_bank_files(memory_bank_path, original_project_name, project_description)
-    cursor_rules_files = create_cursor_rules_files(cursor_path)
+    # Create BASE directory structure and standard files
+    project_path = generate_base_structure(sanitized_project_name, original_project_name, project_description)
+    
+    # Check if base structure generation was successful 
+    if not project_path:
+         print("Failed to create base project structure. Exiting.")
+         sys.exit(1)
+    
+    # Apply selected additional templates if any were chosen
+    if selected_templates:
+       apply_additional_templates(selected_templates, project_path)
     
     # Print summary
-    print(f"Project name: {original_project_name}")
-    print(f"Sanitized directory name: {sanitized_project_name}")
-    print(f"Project description: {project_description}")
-    print(f"Project directory: {project_path}")
+    print(f"\nProject Setup Summary:")
+    print(f"  Project Name: {original_project_name}")
+    print(f"  Directory Name: {sanitized_project_name}")
+    print(f"  Project Path: {project_path}")
+    if selected_templates:
+        print("  Additional Templates Applied:")
+        for template in selected_templates:
+            print(f"    - {template.get('name', template.get('id'))}")
+    else:
+        print("  Additional Templates Applied: None")
     
     # Print post-execution instructions
     print_post_execution_instructions(original_project_name, sanitized_project_name)

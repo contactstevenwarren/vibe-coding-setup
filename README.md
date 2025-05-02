@@ -47,7 +47,7 @@ Simply run the `vibe-coding-setup` command:
 vibe-coding-setup
 ```
 
-Follow the prompts to enter your project name and description. The script will:
+Follow the prompts to enter your project name and description. You will also be asked if you want to apply any optional project templates (e.g., for specific tech stacks or configurations) to add extra files, primarily instructional rules within `.cursor/rules/`. The script will then:
 
 1. Create a new project directory with the sanitized name
 2. Set up the memory-bank directory with template files
