@@ -19,16 +19,211 @@ import argparse
 import os
 
 # Version information
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 # ===================================================================================
 # Template Definitions (Optional Additions)
 # ===================================================================================
 
 # Simple content for the new markdown file
-LARAVEL_SUPABASE_IMPLEMENTATION_PLAN_CONTENT = """# Laravel + Supabase Implementation Plan
+LARAVEL_SUPABASE_IMPLEMENTATION_PLAN_CONTENT = """# Implementation Plan
 
-- Setup initial Laravel project using Docker.
+**Project:** Generic Laravel with Supabase Integration
+
+---
+
+## Laravel with Supabase - Implementation Plan
+
+This plan outlines a generic setup for a Laravel project integrated with Supabase for authentication and database management. It focuses on creating a robust foundation, ensuring MySQL is removed from Docker Compose, and provisioning migrations to Supabase after updating credentials. The steps are designed to be reusable across projects, with clear tasks and verification tests.
+
+**Phase 1: Project Setup & Backend Foundation**
+
+1. **Task:** Set Up Supabase Project
+   - Create a new project in the Supabase dashboard (requires signup/login at [supabase.com](https://supabase.com)).
+   - Configure basic settings (e.g., region, project name).
+   - Retrieve and securely store the project URL, API keys (`anon` and `service_role`), and database connection details (host, port, database name, username, password).
+   - **Test:** Access the Supabase dashboard and verify the project is active.
+
+2. **Task:** Initialize Laravel Project & Docker Environment
+   - Ensure Docker is installed and running on the host machine.
+   - Create a new Laravel project using Composer within a Docker container to avoid local PHP dependencies:
+     ```bash
+     # Run in the parent directory where the project folder will be created
+     docker run --rm -v "$(pwd):/app" composer create-project laravel/laravel laravel-supabase --ignore-platform-reqs
+     ```
+   - Navigate into the project directory:
+     ```bash
+     cd laravel-supabase
+     ```
+   - Install Laravel Sail for Dockerized development:
+     ```bash
+     docker run --rm -v "$(pwd):/app" -w /app composer php artisan sail:install
+     ```
+     - When prompted, select `pgsql` (PostgreSQL) as the database service, as Supabase uses PostgreSQL.
+   - Modify the `docker-compose.yml` file to remove MySQL service:
+     - Open `docker-compose.yml` in the project root.
+     - Locate and delete the `mysql` service block (if present) and any related volumes or dependencies.
+     - Ensure the `pgsql` service remains or is added, but for Supabase, you may remove it if connecting to an external Supabase instance (see next step).
+   - Update the `.env` file with Supabase database credentials:
+     ```
+     DB_CONNECTION=pgsql
+     DB_HOST=<supabase-host>
+     DB_PORT=<supabase-port, typically 5432>
+     DB_DATABASE=<supabase-database-name>
+     DB_USERNAME=<supabase-username>
+     DB_PASSWORD=<supabase-password>
+     ```
+     - Add Supabase API credentials:
+       ```
+       SUPABASE_URL=<supabase-project-url>
+       SUPABASE_KEY=<supabase-anon-key>
+       SUPABASE_SERVICE_KEY=<supabase-service-role-key>
+       ```
+   - Start Docker containers using Sail:
+     ```bash
+     ./vendor/bin/sail up -d
+     ```
+   - **Test:** Access the Laravel welcome page at `http://localhost` (or the configured port). Verify Docker containers are running with `docker ps`.
+
+3. **Task:** Provision Database Migrations to Supabase
+   - Create necessary migration files for your application (e.g., `users`, `user_profiles`):
+     ```bash
+     ./vendor/bin/sail artisan make:migration create_user_profiles_table
+     ```
+   - Edit the migration file (e.g., `database/migrations/xxxx_create_user_profiles_table.php`) to define the schema. Example:
+     ```php
+     Schema::create('user_profiles', function (Blueprint $table) {
+         $table->uuid('id')->primary();
+         $table->foreignUuid('user_id')->constrained('auth.users')->onDelete('cascade');
+         $table->string('name')->nullable();
+         $table->timestamps();
+     });
+     ```
+     - Note: Supabase's `auth.users` table is managed by Supabase Auth. Use `foreignUuid` to reference it.
+   - Run migrations to apply the schema to Supabase:
+     ```bash
+     ./vendor/bin/sail artisan migrate
+     ```
+   - **Test:** Check the Supabase dashboard to confirm the `user_profiles` table exists with the correct schema. Run `sail artisan migrate:status` to verify migrations applied successfully.
+
+**Phase 2: Supabase Authentication Integration**
+
+4. **Task:** Integrate Supabase Authentication
+   - Install the Supabase PHP client library:
+     ```bash
+     ./vendor/bin/sail composer require supabase/supabase-php
+     ```
+   - Configure Supabase client in Laravel (e.g., in a service provider or dedicated service class):
+     ```php
+     // app/Services/SupabaseService.php
+     namespace App\Services;
+     
+     use Supabase\SupabaseClient;
+     
+     class SupabaseService
+     {
+         protected $client;
+         
+         public function __construct()
+         {
+             $this->client = new SupabaseClient(
+                 env('SUPABASE_URL'),
+                 env('SUPABASE_KEY')
+             );
+         }
+         
+         public function auth()
+         {
+             return $this->client->auth;
+         }
+     }
+     ```
+   - Create authentication endpoints (e.g., Sign Up, Login) in a controller:
+     ```php
+     // app/Http/Controllers/AuthController.php
+     namespace App\Http\Controllers;
+     
+     use App\Services\SupabaseService;
+     use Illuminate\Http\Request;
+     
+     class AuthController extends Controller
+     {
+         protected $supabase;
+         
+         public function __construct(SupabaseService $supabase)
+         {
+             $this->supabase = $supabase;
+         }
+         
+         public function signup(Request $request)
+         {
+             $credentials = $request->validate([
+                 'email' => 'required|email',
+                 'password' => 'required|min:6',
+             ]);
+             
+             $response = $this->supabase->auth()->signUp($credentials);
+             return response()->json($response);
+         }
+         
+         public function login(Request $request)
+         {
+             $credentials = $request->validate([
+                 'email' => 'required|email',
+                 'password' => 'required',
+             ]);
+             
+             $response = $this->supabase->auth()->signInWithPassword($credentials);
+             return response()->json($response);
+         }
+     }
+     ```
+   - Define routes in `routes/api.php`:
+     ```php
+     Route::post('/auth/signup', [AuthController::class, 'signup']);
+     Route::post('/auth/login', [AuthController::class, 'login']);
+     ```
+   - **Test:** Use an HTTP client (e.g., Postman) to send POST requests to `/api/auth/signup` and `/api/auth/login`. Verify a user is created in Supabase's `auth.users` table and a valid session token is returned.
+
+**Phase 3: Verification & Cleanup**
+
+5. **Task:** Verify Integration and Environment
+   - Run Laravel tests to ensure endpoints work as expected:
+     ```bash
+     ./vendor/bin/sail artisan make:test AuthTest
+     ```
+     - Example test:
+       ```php
+       // tests/Feature/AuthTest.php
+       use Illuminate\Foundation\Testing\RefreshDatabase;
+       
+       class AuthTest extends TestCase
+       {
+           public function test_user_can_signup()
+           {
+               $response = $this->postJson('/api/auth/signup', [
+                   'email' => 'test@example.com',
+                   'password' => 'password123',
+               ]);
+               
+               $response->assertStatus(200);
+           }
+       }
+       ```
+     - Run tests:
+       ```bash
+       ./vendor/bin/sail test
+       ```
+   - Verify no MySQL service is running in Docker:
+     ```bash
+     docker ps
+     ```
+     - Ensure no MySQL container is listed.
+   - **Test:** Confirm all tests pass and Supabase tables (`auth.users`, `user_profiles`) are populated correctly.
+
+---
+
+This plan provides a generic, vibe-coded approach to setting up a Laravel project with Supabase, removing MySQL from Docker Compose, and provisioning migrations. Adjust table schemas and endpoints as needed for specific project requirements.
 """
 
 # Defines optional additional templates (applied *after* base structure)
