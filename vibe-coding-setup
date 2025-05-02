@@ -25,15 +25,10 @@ VERSION = "1.1.0"
 # Template Definitions (Optional Additions)
 # ===================================================================================
 
-def get_laravel_supabase_setup_instructions():
-    """Returns the content for the Laravel + Supabase setup instruction file."""
-    # Simplified instruction as requested
-    return """---
-description: Guide for setting up Laravel project
-type: Default
----
+# Simple content for the new markdown file
+LARAVEL_SUPABASE_IMPLEMENTATION_PLAN_CONTENT = """# Laravel + Supabase Implementation Plan
 
-Use docker for installing laravel project.
+- Setup initial Laravel project using Docker.
 """
 
 # Defines optional additional templates (applied *after* base structure)
@@ -41,11 +36,11 @@ Use docker for installing laravel project.
 ADDITIONAL_TEMPLATES = [
     {
         "id": "laravel-supabase",
-        "name": "Add: Laravel with Supabase Auth Instructions",
+        "name": "Add: Laravel with Supabase Auth Implementation Plan",
         "directories": [], # No *additional* directories beyond base
         "files": {
-            # Adds specific setup instructions for Laravel + Supabase
-            ".cursor/rules/laravel-supabase-setup.mdc": get_laravel_supabase_setup_instructions,
+            # Adds specific implementation steps for Laravel + Supabase
+            "memory-bank/implementation-plan-laravel-supabase.md": LARAVEL_SUPABASE_IMPLEMENTATION_PLAN_CONTENT,
         }
     },
     # Add more templates here in the future
